@@ -1,0 +1,1 @@
+salary_extraction_human_prompt = "Извлеки теперь зарплатные диапазоны из {text_type}: {text} "

@@ -1,0 +1,1 @@
+skill_categorize_human_prompt = """Определи, к какой категории относится каждый из следующих навыков навыков {vacancy_skills_list}"""

@@ -1,0 +1,1 @@
+work_requirements_human_prompt = """Извлеки требования к опыту работы из следующей вакансии {vacancy}"""

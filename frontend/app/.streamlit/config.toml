@@ -1,0 +1,14 @@
+[theme]
+base = "light"                    
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F5F7FB"
+textColor = "#1B2330"
+primaryColor = "#0550A0"
+showSidebarBorder = true
+
+[theme.sidebar]                    # отдельные цвета именно для sidebar
+backgroundColor = "#0550A0"        # фон сайдбара
+secondaryBackgroundColor = "#0B2E6D"
+textColor = "#FFFFFF"              # цвет текста и иконок в меню
+primaryColor = "#FFFFFF"           # ховер/фокус виджетов в сайдбаре
+borderColor = "#123A7A"
