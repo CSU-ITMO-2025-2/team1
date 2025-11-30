@@ -14,8 +14,10 @@ RUN UV_HTTP_TIMEOUT=300 uv sync \
 
 COPY core_api/ .
 
-# Исправляем окончания строк и даем права на выполнение entrypoint.sh
-RUN sed -i 's/\r$//' entrypoint.sh && chmod +x entrypoint.sh
+# Создаем директорию для миграций, исправляем окончания строк и даем права на выполнение
+RUN mkdir -p alembic/versions && \
+    sed -i 's/\r$//' entrypoint.sh && \
+    chmod +x entrypoint.sh
 
 # Устанавливаем ENTRYPOINT
 ENTRYPOINT ["./entrypoint.sh"]

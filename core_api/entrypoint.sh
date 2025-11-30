@@ -1,17 +1,25 @@
 #!/bin/sh
 
-# Если произойдет ошибка, скрипт остановится
-set -e
-
 echo "🔍 Проверяю наличие миграций..."
 
+# Создаем директорию versions если её нет
+mkdir -p alembic/versions
+
 # Проверяем, есть ли файлы миграций
-MIGRATION_COUNT=$(find alembic/versions -name "*.py" ! -name "__pycache__" -type f 2>/dev/null | wc -l)
+MIGRATION_COUNT=$(find alembic/versions -name "*.py" ! -name "__pycache__" ! -name ".gitkeep" -type f 2>/dev/null | wc -l)
 
 if [ "$MIGRATION_COUNT" -eq 0 ]; then
     echo "📝 Миграции не найдены. Создаю начальную миграцию..."
-    uv run alembic revision --autogenerate -m "initial migration"
-    echo "✅ Миграция создана"
+    
+    # Пытаемся создать миграцию
+    if uv run alembic revision --autogenerate -m "initial migration" 2>&1; then
+        echo "✅ Миграция создана"
+    else
+        echo "⚠️  Не удалось создать миграцию."
+        echo "💡 Возможно, база данных содержит старые миграции."
+        echo "💡 Попробуйте сбросить БД: docker-compose down -v && docker-compose up"
+        exit 1
+    fi
 fi
 
 echo "🚀 Применяю миграции базы данных..."
@@ -22,8 +30,7 @@ if uv run alembic upgrade head 2>&1; then
 else
     echo "⚠️  Не удалось применить миграции."
     echo "💡 Попробуйте сбросить БД: docker-compose down -v && docker-compose up"
-    echo ""
-    echo "⏭️  Продолжаю запуск приложения..."
+    exit 1
 fi
 
 echo "✅ Запускаю приложение..."
