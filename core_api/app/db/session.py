@@ -17,8 +17,8 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from app.db.config import get_database_url
-from logger import setup_logger
+from app.core.config import settings
+from app.logger import setup_logger
 
 # Логгер для модуля
 logger = setup_logger(__name__)
@@ -40,15 +40,12 @@ def init_db() -> None:
     """
     global _engine, _async_session_maker
     
-    # Получаем URL подключения
-    database_url = get_database_url(async_driver=True)
-    
     logger.info("Инициализация подключения к PostgreSQL")
     
-    # Создаём async движок
+    # Создаём async движок, используя URL из настроек
     _engine = create_async_engine(
-        database_url,
-        echo=False,  # Логирование SQL запросов (можно включить для отладки)
+        settings.postgres.url,
+        echo=False,  # Логирование SQL запросов
         pool_pre_ping=True,  # Проверка соединения перед использованием
         pool_size=10,  # Размер пула соединений
         max_overflow=20,  # Максимальное количество дополнительных соединений
@@ -58,8 +55,8 @@ def init_db() -> None:
     _async_session_maker = async_sessionmaker(
         _engine,
         class_=AsyncSession,
-        expire_on_commit=False,  # Не сбрасывать объекты после commit
-        autoflush=False,  # Не выполнять автоматический flush
+        expire_on_commit=True,  # Сбрасывать объекты после commit (предотвращает устаревшие данные)
+        autoflush=True,  # Автоматический flush перед запросами (предсказуемое поведение)
         autocommit=False,  # Явный контроль транзакций
     )
     
@@ -78,20 +75,11 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
         
     Raises:
         RuntimeError: Если БД не была инициализирована
-        
-    Example:
-        ```python
-        @app.get("/users")
-        async def get_users(session: AsyncSession = Depends(get_session)):
-            result = await session.execute(select(User))
-            return result.scalars().all()
-        ```
     """
     if _async_session_maker is None:
         logger.error("База данных не инициализирована")
         raise RuntimeError(
             "База данных не инициализирована. "
-            "Вызовите init_db() при старте приложения."
         )
     
     # Создаём новую сессию

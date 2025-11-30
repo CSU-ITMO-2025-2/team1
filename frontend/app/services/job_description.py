@@ -1,9 +1,10 @@
-import json
 import os
 from typing import Optional
 import requests
-from requests_toolbelt import MultipartEncoder
 import streamlit as st
+
+from utils.file_utils import extract_text_from_file
+from utils.cookie_utils import prepare_request_cookies
 
 # URL API-сервера
 CORE_API_HOST = os.getenv("CORE_API_HOST")
@@ -11,12 +12,13 @@ CORE_API_PORT = os.getenv("CORE_API_PORT")
 
 BASE_URL = f"http://{CORE_API_HOST}:{CORE_API_PORT}"
 
+
 def get_vacancy_description(
     input_data: Optional[str] = None,
     input_file: Optional[st.runtime.uploaded_file_manager.UploadedFile] = None
 ) -> dict:
     """
-    Отправляет POST-запрос к эндпоинту /generate_vacancy_description
+    Отправляет POST-запрос к эндпоинту /job_description/generate
 
     Args:
         input_data: Текст с описанием (опционально)
@@ -29,36 +31,26 @@ def get_vacancy_description(
         - job_media_format: текст для ТВ/газета
         - job_social_media_format: текст для соцсетей
     """
-    url = f"{BASE_URL}/generate_vacancy_description"
+    url = f"{BASE_URL}/job_description/generate"
 
-    # Формируем multipart/form-data запрос
-    fields = {}
-
-    if input_data:
-        fields['input_data'] = input_data
+    # Получаем текст из файла или используем переданный текст
     if input_file:
-        fields['input_file'] = (input_file.name, input_file.getvalue(), input_file.type or 'application/octet-stream')
-
-    # Добавляем данные пользователя (если авторизован)
-    user = st.session_state.get("user")
-    if user:
-        user_data = {
-            "auth_provider": "keycloak",
-            "external_id": user.get("sub"),
-            "email": user.get("email"),
-            "full_name": user.get("name")
-        }
-        fields['user_data'] = json.dumps(user_data)
-
-    # Если есть файл, используем multipart
-    if input_file:
-        encoder = MultipartEncoder(fields=fields)
-        headers = {'Content-Type': encoder.content_type}
-        response = requests.post(url, data=encoder, headers=headers)
+        text = extract_text_from_file(input_file)
+    elif input_data:
+        text = input_data
     else:
-        # Если только текст, отправляем как form data
-        response = requests.post(url, data=fields)
+        raise ValueError("Необходимо указать input_data или input_file")
 
+    # Формируем JSON запрос
+    payload = {
+        "input_data": text,
+    }
+
+    # Получаем cookies для авторизации
+    cookies = prepare_request_cookies()
+
+    # Отправляем JSON с cookies
+    response = requests.post(url, json=payload, cookies=cookies)
     response.raise_for_status()
     result = response.json()
 

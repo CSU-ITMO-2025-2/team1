@@ -18,7 +18,7 @@ from alembic import context
 
 # Импортируем Base и модели для автогенерации
 from app.db.base import Base
-from app.db.config import get_database_url
+from app.core.config import settings
 # Импортируем модели чтобы они были зарегистрированы в MetaData
 from app.db.models import User, GenerationResult  # noqa: F401
 
@@ -30,8 +30,8 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # Устанавливаем URL из переменных окружения
-# Используем асинхронный драйвер (asyncpg), так как run_async_migrations использует async_engine_from_config
-config.set_main_option("sqlalchemy.url", get_database_url(async_driver=True))
+# Используем асинхронный драйвер (asyncpg)
+config.set_main_option("sqlalchemy.url", settings.postgres.url)
 
 # MetaData для автогенерации миграций из моделей
 target_metadata = Base.metadata

@@ -10,7 +10,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import User
-from logger import setup_logger
+from app.logger import setup_logger
 
 # Логгер для модуля
 logger = setup_logger(__name__)
@@ -47,29 +47,6 @@ class UserRepository:
         )
         return result.scalar_one_or_none()
     
-    async def get_by_provider_id(
-        self,
-        auth_provider: str,
-        external_id: str
-    ) -> Optional[User]:
-        """
-        Получить пользователя по провайдеру и external_id.
-        
-        Args:
-            auth_provider: Провайдер авторизации (keycloak, internal, etc.)
-            external_id: ID пользователя в системе провайдера
-            
-        Returns:
-            User | None: Найденный пользователь или None
-        """
-        result = await self.session.execute(
-            select(User).where(
-                User.auth_provider == auth_provider,
-                User.external_id == external_id
-            )
-        )
-        return result.scalar_one_or_none()
-    
     async def get_by_email(self, email: str) -> Optional[User]:
         """
         Получить пользователя по email.
@@ -87,26 +64,20 @@ class UserRepository:
     
     async def create(
         self,
-        auth_provider: str,
-        external_id: str,
-        email: Optional[str] = None,
-        full_name: Optional[str] = None
+        email: str,
+        full_name: str
     ) -> User:
         """
         Создать нового пользователя.
         
         Args:
-            auth_provider: Провайдер авторизации
-            external_id: ID пользователя в системе провайдера
-            email: Email пользователя (опционально)
-            full_name: Полное имя пользователя (опционально)
+            email: Email пользователя (уникальный)
+            full_name: Полное имя пользователя
             
         Returns:
             User: Созданный пользователь
         """
         user = User(
-            auth_provider=auth_provider,
-            external_id=external_id,
             email=email,
             full_name=full_name
         )
@@ -119,32 +90,26 @@ class UserRepository:
             "Создан новый пользователь",
             extra={
                 "user_id": user.id,
-                "auth_provider": auth_provider,
-                "external_id": external_id,
                 "email": email
             }
         )
         
         return user
     
-    async def get_or_create_by_provider_id(
+    async def get_or_create_by_email(
         self,
-        auth_provider: str,
-        external_id: str,
-        email: Optional[str] = None,
-        full_name: Optional[str] = None
+        email: str,
+        full_name: str
     ) -> tuple[User, bool]:
         """
         Получить существующего пользователя или создать нового.
         
-        Ищет пользователя по auth_provider и external_id.
+        Ищет пользователя по email.
         Если не найден - создаёт нового с переданными данными.
         
         Args:
-            auth_provider: Провайдер авторизации
-            external_id: ID пользователя в системе провайдера
-            email: Email пользователя (опционально)
-            full_name: Полное имя пользователя (опционально)
+            email: Email пользователя (уникальный)
+            full_name: Полное имя пользователя
             
         Returns:
             tuple[User, bool]: Кортеж (пользователь, был_ли_создан)
@@ -152,23 +117,20 @@ class UserRepository:
                 - bool: True если пользователь был создан, False если найден
         """
         # Пытаемся найти существующего пользователя
-        user = await self.get_by_provider_id(auth_provider, external_id)
+        user = await self.get_by_email(email)
         
         if user is not None:
             logger.debug(
                 "Найден существующий пользователь",
                 extra={
                     "user_id": user.id,
-                    "auth_provider": auth_provider,
-                    "external_id": external_id
+                    "email": email
                 }
             )
             return user, False
         
         # Создаём нового пользователя
         user = await self.create(
-            auth_provider=auth_provider,
-            external_id=external_id,
             email=email,
             full_name=full_name
         )

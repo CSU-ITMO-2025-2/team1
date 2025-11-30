@@ -11,7 +11,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import GenerationResult
-from logger import setup_logger
+from app.logger import setup_logger
 
 # Логгер для модуля
 logger = setup_logger(__name__)
@@ -56,10 +56,7 @@ class GenerationResultRepository:
         user_id: Optional[int] = None,
         request_payload: Optional[dict] = None,
         response_payload: Optional[dict] = None,
-        model_name: Optional[str] = None,
         error_message: Optional[str] = None,
-        tokens_input: Optional[int] = None,
-        tokens_output: Optional[int] = None,
         latency_ms: Optional[int] = None,
     ) -> GenerationResult:
         """
@@ -71,10 +68,7 @@ class GenerationResultRepository:
             user_id: ID пользователя (опционально)
             request_payload: Входные данные запроса
             response_payload: Результат генерации
-            model_name: Название модели
             error_message: Сообщение об ошибке
-            tokens_input: Количество входных токенов
-            tokens_output: Количество выходных токенов
             latency_ms: Время выполнения в мс
             
         Returns:
@@ -85,11 +79,8 @@ class GenerationResultRepository:
             request_type=request_type,
             request_payload=request_payload,
             response_payload=response_payload,
-            model_name=model_name,
             status=status,
             error_message=error_message,
-            tokens_input=tokens_input,
-            tokens_output=tokens_output,
             latency_ms=latency_ms,
         )
         

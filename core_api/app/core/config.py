@@ -18,21 +18,16 @@ class PostgresConfig(ConfigBase):
 
     model_config = SettingsConfigDict(env_prefix="postgres_")
 
-    host: str = "localhost"
-    port: int = 5432
-    db: str = "hr_assist"
-    user: str = "postgres"
-    password: str  # Обязательное поле
+    host: str
+    port: int
+    db: str
+    user: str
+    password: str
 
     @property
     def url(self) -> str:
-        """URL для асинхронного подключения (asyncpg)."""
+        """URL для асинхронного подключения к postgres."""
         return f"postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.db}"
-
-    @property
-    def sync_url(self) -> str:
-        """URL для синхронного подключения (psycopg2) - для Alembic."""
-        return f"postgresql+psycopg2://{self.user}:{self.password}@{self.host}:{self.port}/{self.db}"
 
 
 class RabbitMQConfig(ConfigBase):
@@ -40,11 +35,11 @@ class RabbitMQConfig(ConfigBase):
 
     model_config = SettingsConfigDict(env_prefix="rabbitmq_")
 
-    default_user: str = "guest"
-    default_pass: str = "guest"
-    default_host: str = "localhost"
-    port: int = 5672
-    default_vhost: str = "/"
+    default_user: str
+    default_pass: str
+    default_host: str
+    port: int
+    default_vhost: str
 
     @property
     def url(self) -> str:
@@ -60,6 +55,20 @@ class Settings(BaseSettings):
 
     # Общие настройки
     core_api_port: int = 8000
+    
+    # Auth настройки
+    auth_service_url: str = Field(
+        default="http://auth_service:9000",
+        description="URL auth service для проверки авторизации"
+    )
+    auth_required: bool = Field(
+        default=False,
+        description="Требовать авторизацию для всех эндпоинтов"
+    )
+    auth_cookie_name: str = Field(
+        default="sid",
+        description="Имя cookie с session ID"
+    )
 
 
 settings = Settings()

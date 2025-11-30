@@ -1,9 +1,10 @@
-import json
 import os
-from typing import Dict, Optional
+from typing import Dict
 import requests
-from requests_toolbelt import MultipartEncoder
 import streamlit as st
+
+from utils.file_utils import extract_text_from_file
+from utils.cookie_utils import prepare_request_cookies
 
 CORE_API_HOST = os.getenv("CORE_API_HOST")
 CORE_API_PORT = os.getenv("CORE_API_PORT")
@@ -12,44 +13,37 @@ BASE_URL = f"http://{CORE_API_HOST}:{CORE_API_PORT}"
 
 
 def resume_evaluation(
-    vacancy_file: Optional[st.runtime.uploaded_file_manager.UploadedFile] = None,
-    resume_file: Optional[st.runtime.uploaded_file_manager.UploadedFile] = None
+    vacancy_file: st.runtime.uploaded_file_manager.UploadedFile,
+    resume_file: st.runtime.uploaded_file_manager.UploadedFile
 ) -> Dict:
     """
-    POST /resume_evaluation
-    Отправляет текст и/или файлы для оценки резюме.
+    POST /resume/evaluation
+    Отправляет текст вакансии и резюме для оценки соответствия.
 
     Args:
-        vacancy_file: Файл с вакансией (опционально)
-        resume_file: Файл с резюме (опционально)
+        vacancy_file: Файл с вакансией
+        resume_file: Файл с резюме
 
     Returns:
         JSON-ответ API как dict
     """
-    url = f"{BASE_URL}/resume_evaluation"
+    url = f"{BASE_URL}/resume/evaluation"
 
-    # Формируем multipart/form-data запрос
-    fields = {}
+    # Извлекаем текст из файлов
+    vacancy_text = extract_text_from_file(vacancy_file)
+    resume_text = extract_text_from_file(resume_file)
 
-    if vacancy_file:
-        fields['vacancy_file'] = (vacancy_file.name, vacancy_file.getvalue(), vacancy_file.type or 'application/octet-stream')
-    if resume_file:
-        fields['resume_file'] = (resume_file.name, resume_file.getvalue(), resume_file.type or 'application/octet-stream')
+    # Формируем JSON запрос
+    payload = {
+        "vacancy_text": vacancy_text,
+        "resume_text": resume_text,
+    }
 
-    # Добавляем данные пользователя (если авторизован)
-    user = st.session_state.get("user")
-    if user:
-        user_data = {
-            "auth_provider": "keycloak",
-            "external_id": user.get("sub"),
-            "email": user.get("email"),
-            "full_name": user.get("name")
-        }
-        fields['user_data'] = json.dumps(user_data)
+    # Получаем cookies для авторизации
+    cookies = prepare_request_cookies()
 
-    encoder = MultipartEncoder(fields=fields)
-    headers = {'Content-Type': encoder.content_type}
-    resp = requests.post(url, data=encoder, headers=headers)
-
-    resp.raise_for_status()
-    return resp.json()
+    # Отправляем JSON с cookies
+    response = requests.post(url, json=payload, cookies=cookies)
+    response.raise_for_status()
+    
+    return response.json()
