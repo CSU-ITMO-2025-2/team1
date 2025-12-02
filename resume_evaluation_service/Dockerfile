@@ -4,7 +4,7 @@ WORKDIR /app
 
 RUN pip install --no-cache-dir --trusted-host pypi.org --trusted-host files.pythonhosted.org uv
 
-COPY resume_evaluation_service/pyproject.toml resume_evaluation_service/uv.lock ./
+COPY pyproject.toml uv.lock ./
 
 RUN UV_HTTP_TIMEOUT=300 uv sync \
     --allow-insecure-host pypi.org \
@@ -14,6 +14,6 @@ RUN UV_HTTP_TIMEOUT=300 uv sync \
 
 ENV PYTHONPATH=/app
 
-COPY resume_evaluation_service/ ./resume_evaluation_service
+COPY . .
 
-CMD ["uv", "run", "python", "-m", "resume_evaluation_service.worker"]
+CMD ["uv", "run", "python", "-m", "worker"]

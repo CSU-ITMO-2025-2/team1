@@ -5,10 +5,10 @@
 import asyncio
 from typing import Any, Dict
 
-from ...utils.logger import setup_logger
-from .get_flyer_format import get_flyer_format
-from .get_media_format import get_media_format
-from .get_social_media_format import get_social_media_format
+from utils.logger import setup_logger
+from pipelines.format_job_description.get_flyer_format import get_flyer_format
+from pipelines.format_job_description.get_media_format import get_media_format
+from pipelines.format_job_description.get_social_media_format import get_social_media_format
 
 # Логирование
 logger = setup_logger(__name__)

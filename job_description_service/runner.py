@@ -5,10 +5,10 @@
 
 from typing import Any, Dict
 
-from .pipelines.format_job_description.runner import get_format_sync
-from .pipelines.job_description.runner import get_job_description_sync
-from .utils.logger import setup_logger
-from .get_report import get_report
+from pipelines.format_job_description.runner import get_format_sync
+from pipelines.job_description.runner import get_job_description_sync
+from utils.logger import setup_logger
+from get_report import get_report
 
 # Логирование
 logger = setup_logger(__name__)

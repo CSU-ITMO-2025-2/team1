@@ -4,10 +4,10 @@
 
 from typing import Optional
 
-from ...utils.clean_text import clean_text
-from ...utils.logger import setup_logger
-from .classify_skills_llm.classify_skills import classify_skills_llm
-from .pydantic_models.classify_skills import ParsedJobSkills
+from utils.clean_text import clean_text
+from utils.logger import setup_logger
+from pipelines.skills_evaluation.classify_skills_llm.classify_skills import classify_skills_llm
+from pipelines.skills_evaluation.pydantic_models.classify_skills import ParsedJobSkills
 
 # Логирование
 logger = setup_logger(__name__)

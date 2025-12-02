@@ -7,9 +7,9 @@ from typing import Any, Dict, Optional
 
 from dateutil.relativedelta import relativedelta
 
-from ...utils.logger import setup_logger
-from .pydantic_models.extract_work_exp import WorkExpList
-from .pydantic_models.extract_work_reqs import WorkExpInfo as WorkExpReqInfo
+from utils.logger import setup_logger
+from pipelines.work_exp_evaluation.pydantic_models.extract_work_exp import WorkExpList
+from pipelines.work_exp_evaluation.pydantic_models.extract_work_reqs import WorkExpInfo as WorkExpReqInfo
 
 # Логирование
 logger = setup_logger(__name__)

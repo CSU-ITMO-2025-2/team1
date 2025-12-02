@@ -6,9 +6,9 @@ from langchain_core.prompts import (
 )
 from langchain_core.prompts.few_shot import FewShotChatMessagePromptTemplate
 
-from .examples import relevance_examples
-from .human import course_relevance_human_prompt as human
-from .system import system_relevance_course_prompt as system
+from pipelines.education_evaluation.prompts.course_relevance.examples import relevance_examples
+from pipelines.education_evaluation.prompts.course_relevance.human import course_relevance_human_prompt as human
+from pipelines.education_evaluation.prompts.course_relevance.system import system_relevance_course_prompt as system
 
 # Оборачиваем системный промпт
 relevance_course_system_prompt = SystemMessagePromptTemplate.from_template(

@@ -7,15 +7,15 @@ import asyncio
 import sys
 from typing import Any, Dict, List, Optional
 
-from ...utils.logger import setup_logger
-from .agg_skills import get_agg_skills
-from .classify_skills import get_classify_reqs
-from .clean_skills import get_cleaned_skills
-from .extract_reqs import get_reqs
-from .get_report import get_report
-from .resume_parser import get_resume_skills
-from .skills_match import get_skills_match
-from .skills_relevance import get_skills_relevance
+from utils.logger import setup_logger
+from pipelines.skills_evaluation.agg_skills import get_agg_skills
+from pipelines.skills_evaluation.classify_skills import get_classify_reqs
+from pipelines.skills_evaluation.clean_skills import get_cleaned_skills
+from pipelines.skills_evaluation.extract_reqs import get_reqs
+from pipelines.skills_evaluation.get_report import get_report
+from pipelines.skills_evaluation.resume_parser import get_resume_skills
+from pipelines.skills_evaluation.skills_match import get_skills_match
+from pipelines.skills_evaluation.skills_relevance import get_skills_relevance
 
 # Настройка логирования
 logger = setup_logger(__name__)

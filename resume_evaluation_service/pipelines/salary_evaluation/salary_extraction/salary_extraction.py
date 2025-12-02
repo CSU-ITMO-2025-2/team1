@@ -5,14 +5,14 @@
 
 from typing import Optional
 
-from ....pipelines.salary_evaluation.prompts.extract_sales import (
+from pipelines.salary_evaluation.prompts.extract_sales import (
     salary_extraction_full_prompt,
 )
-from ....pipelines.salary_evaluation.pydantic_models.salary_extraction_model import (
+from pipelines.salary_evaluation.pydantic_models.salary_extraction_model import (
     SalaryData,
 )
-from ....utils.create_llm_with_retries import get_structured_llm
-from ....utils.logger import setup_logger
+from utils.create_llm_with_retries import get_structured_llm
+from utils.logger import setup_logger
 
 # Логирование
 logger = setup_logger(__name__)

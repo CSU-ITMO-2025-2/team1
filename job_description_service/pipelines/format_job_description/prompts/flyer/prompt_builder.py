@@ -5,9 +5,9 @@ from langchain_core.prompts import (
 )
 from langchain_core.prompts.few_shot import FewShotChatMessagePromptTemplate
 
-from .examples import flyer_examples
-from .human_prompt import human_flyer_prompt as human
-from .system_prompt import system_flyer_prompt as system
+from pipelines.format_job_description.prompts.flyer.examples import flyer_examples
+from pipelines.format_job_description.prompts.flyer.human_prompt import human_flyer_prompt as human
+from pipelines.format_job_description.prompts.flyer.system_prompt import system_flyer_prompt as system
 
 # Оборачиваем системный промпт
 system_prompt = SystemMessagePromptTemplate.from_template(system)

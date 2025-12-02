@@ -4,10 +4,10 @@
 
 from typing import Optional
 
-from ...utils.clean_text import clean_text
-from ...utils.logger import setup_logger
-from .extract_work_reqs_llm.extract_work_reqs import extract_work_reqs_llm
-from .pydantic_models.extract_work_reqs import WorkExpInfo
+from utils.clean_text import clean_text
+from utils.logger import setup_logger
+from pipelines.work_exp_evaluation.extract_work_reqs_llm.extract_work_reqs import extract_work_reqs_llm
+from pipelines.work_exp_evaluation.pydantic_models.extract_work_reqs import WorkExpInfo
 
 # Логирование
 logger = setup_logger(__name__)

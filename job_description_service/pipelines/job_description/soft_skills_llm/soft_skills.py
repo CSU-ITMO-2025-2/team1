@@ -6,12 +6,12 @@
 import asyncio
 from typing import Optional
 
-from ....utils.create_llm_with_retries import get_structured_llm
-from ....utils.logger import setup_logger
-from ..prompts.soft_skills.prompt_builder import (
+from utils.create_llm_with_retries import get_structured_llm
+from utils.logger import setup_logger
+from pipelines.job_description.prompts.soft_skills.prompt_builder import (
     soft_skills_full_prompt,
 )
-from ..pydantic_models.soft_skills import GeneratedSoftSkills
+from pipelines.job_description.pydantic_models.soft_skills import GeneratedSoftSkills
 
 # Логирование
 logger = setup_logger(__name__)

@@ -5,10 +5,10 @@
 import asyncio
 from typing import Any, Dict
 
-from ...utils.logger import setup_logger
-from .generate_job_description import get_structured_job_description
-from .generate_soft_skills import get_soft_skills
-from .parse_input import get_structured_input
+from utils.logger import setup_logger
+from pipelines.job_description.generate_job_description import get_structured_job_description
+from pipelines.job_description.generate_soft_skills import get_soft_skills
+from pipelines.job_description.parse_input import get_structured_input
 
 # Логирование
 logger = setup_logger(__name__)

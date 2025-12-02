@@ -4,9 +4,9 @@
 
 from typing import Optional
 
-from ...utils.logger import setup_logger
-from .clean_skills_llm.clean_skills import clean_skills_llm
-from .pydantic_models.clean_skills import SkillsList
+from utils.logger import setup_logger
+from pipelines.skills_evaluation.clean_skills_llm.clean_skills import clean_skills_llm
+from pipelines.skills_evaluation.pydantic_models.clean_skills import SkillsList
 
 # Логирование
 logger = setup_logger(__name__)

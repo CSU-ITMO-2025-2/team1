@@ -9,9 +9,9 @@ Core API - Основной сервис HR-ассистента.
 
 from fastapi import FastAPI
 
-from .api.routes import health, job_description, questions, resume
-from .core.lifespan import lifespan
-from .middleware.error_handler import ErrorHandlerMiddleware
+from api.routes import health, job_description, questions, resume
+from core.lifespan import lifespan
+from middleware.error_handler import ErrorHandlerMiddleware
 
 
 app = FastAPI(

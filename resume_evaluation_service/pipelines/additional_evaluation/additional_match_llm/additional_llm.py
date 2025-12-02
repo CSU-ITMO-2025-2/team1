@@ -5,10 +5,10 @@
 
 from typing import Optional
 
-from ..prompts.prompt_builder import additional_full_prompt
-from ..pydantic_models.additional_info import WorkScheduleComparison
-from ....utils.create_llm_with_retries import get_structured_llm
-from ....utils.logger import setup_logger
+from pipelines.additional_evaluation.prompts.prompt_builder import additional_full_prompt
+from pipelines.additional_evaluation.pydantic_models.additional_info import WorkScheduleComparison
+from utils.create_llm_with_retries import get_structured_llm
+from utils.logger import setup_logger
 
 # Логирование
 logger = setup_logger(__name__)

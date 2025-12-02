@@ -5,10 +5,10 @@
 import asyncio
 from typing import Optional
 
-from ...utils.clean_text import clean_text
-from ...utils.logger import setup_logger
-from .pydantic_models.soft_skills import GeneratedSoftSkills
-from .soft_skills_llm.soft_skills import soft_skills_llm
+from utils.clean_text import clean_text
+from utils.logger import setup_logger
+from pipelines.job_description.pydantic_models.soft_skills import GeneratedSoftSkills
+from pipelines.job_description.soft_skills_llm.soft_skills import soft_skills_llm
 
 # Логирование
 logger = setup_logger(__name__)

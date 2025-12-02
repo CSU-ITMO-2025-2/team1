@@ -9,12 +9,12 @@ from typing import Optional
 
 from langchain_core.messages import BaseMessage
 
-from ....utils.create_llm_with_retries import get_structured_llm
-from ....utils.logger import setup_logger
-from ..prompts.extract_courses.extract_course_prompt_builder import (
+from utils.create_llm_with_retries import get_structured_llm
+from utils.logger import setup_logger
+from pipelines.education_evaluation.prompts.extract_courses.extract_course_prompt_builder import (
     extract_course_full_prompt,
 )
-from ..pydantic_models.extract_courses import CourseList
+from pipelines.education_evaluation.pydantic_models.extract_courses import CourseList
 
 # Логирование
 logger = setup_logger(__name__)

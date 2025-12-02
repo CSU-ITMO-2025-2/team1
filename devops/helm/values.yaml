@@ -1,0 +1,87 @@
+image:
+  authService:
+    repository: erofeevdma/aith-team1-auth-service
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  coreApi:
+    repository: erofeevdma/aith-team1-core-api
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  frontend:
+    repository: erofeevdma/aith-team1-frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  resumeWorker:
+    repository: erofeevdma/aith-team1-resume-evaluation-service
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  jobDescrWorker:
+    repository: erofeevdma/aith-team1-job-description-service
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  questionWorker:
+    repository: erofeevdma/aith-team1-question-generation-service
+    tag: latest
+    pullPolicy: IfNotPresent
+
+replicaCount:
+  coreApi: 1
+  frontend: 1
+  workers: 1
+
+rabbitmq:
+  image: rabbitmq:3.13-management-alpine
+  username: guest # заменить на волт
+  password: guest 
+  vhost: "/"
+  port: 5672
+  uiPort: 15672
+
+postgres:
+  image: postgres:16
+  username: postgres # заменить на волт
+  password: postgres
+  db: hr_assist
+  port: 5432
+
+ingress:
+  enabled: true
+  host: #### подставить API
+  className: nginx
+  tls: false
+
+env:
+  openaiModelName: ""
+  openaiApiBase: ""
+  logLevel: INFO
+
+secrets:
+  useExternal: true
+
+resources:
+  coreApi:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  frontend:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 256Mi
+  worker:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 256Mi

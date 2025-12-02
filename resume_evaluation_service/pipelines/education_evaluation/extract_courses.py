@@ -4,12 +4,12 @@
 
 from typing import Optional
 
-from ...utils.clean_text import clean_text
-from ...utils.logger import setup_logger
-from .extract_courses_llm.extract_courses import (
+from utils.clean_text import clean_text
+from utils.logger import setup_logger
+from pipelines.education_evaluation.extract_courses_llm.extract_courses import (
     extract_course_llm,
 )
-from .pydantic_models.extract_courses import (
+from pipelines.education_evaluation.pydantic_models.extract_courses import (
     CourseList,
 )
 

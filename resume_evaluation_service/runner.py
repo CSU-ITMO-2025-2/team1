@@ -5,12 +5,12 @@
 import asyncio
 from typing import Any, Dict
 
-from .pipelines.additional_evaluation.runner import evaluate_additional_match
-from .pipelines.education_evaluation.runner import evaluate_education_match_pipeline
-from .pipelines.salary_evaluation.runner import evaluate_salary_match
-from .pipelines.work_exp_evaluation.runner import evaluate_work_experience_pipeline
-from .pipelines.skills_evaluation.runner import evaluate_skills_pipeline
-from .utils.logger import setup_logger
+from pipelines.additional_evaluation.runner import evaluate_additional_match
+from pipelines.education_evaluation.runner import evaluate_education_match_pipeline
+from pipelines.salary_evaluation.runner import evaluate_salary_match
+from pipelines.work_exp_evaluation.runner import evaluate_work_experience_pipeline
+from pipelines.skills_evaluation.runner import evaluate_skills_pipeline
+from utils.logger import setup_logger
 
 # Логирование
 logger = setup_logger(__name__)

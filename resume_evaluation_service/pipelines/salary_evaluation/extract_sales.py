@@ -4,10 +4,10 @@
 
 from typing import Optional
 
-from ...utils.clean_text import clean_text
-from ...utils.logger import setup_logger
-from .pydantic_models.salary_extraction_model import SalaryData
-from .salary_extraction.salary_extraction import extract_salary_llm
+from utils.clean_text import clean_text
+from utils.logger import setup_logger
+from pipelines.salary_evaluation.pydantic_models.salary_extraction_model import SalaryData
+from pipelines.salary_evaluation.salary_extraction.salary_extraction import extract_salary_llm
 
 # Логирование
 logger = setup_logger(__name__)

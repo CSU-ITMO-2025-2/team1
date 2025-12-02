@@ -7,11 +7,11 @@ import asyncio
 import sys
 from typing import Any, Dict, Optional
 
-from ...utils.logger import setup_logger
-from .extract_work_exp import get_work_exp as get_resume_work_exp
-from .extract_work_reqs import get_work_reqs
-from .get_report import evaluate_work_experience_match
-from .work_relevance import get_work_exp_relevance
+from utils.logger import setup_logger
+from pipelines.work_exp_evaluation.extract_work_exp import get_work_exp as get_resume_work_exp
+from pipelines.work_exp_evaluation.extract_work_reqs import get_work_reqs
+from pipelines.work_exp_evaluation.get_report import evaluate_work_experience_match
+from pipelines.work_exp_evaluation.work_relevance import get_work_exp_relevance
 
 # Логирование
 logger = setup_logger(__name__)

@@ -4,10 +4,10 @@
 
 from typing import Dict, List, Optional
 
-from ...utils.clean_text import clean_text
-from ...utils.logger import setup_logger
+from utils.clean_text import clean_text
+from utils.logger import setup_logger
 
-from .relevance_course_llm.relevance_course import evaluate_courses_relevance_llm
+from pipelines.education_evaluation.relevance_course_llm.relevance_course import evaluate_courses_relevance_llm
 
 # Логирование
 logger = setup_logger(__name__)

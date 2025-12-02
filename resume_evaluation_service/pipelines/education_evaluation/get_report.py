@@ -6,9 +6,9 @@
 
 from typing import Any, Dict, List, Optional, Set
 
-from ...utils.logger import setup_logger
-from .pydantic_models.extract_courses import CourseList
-from .course_relevance import get_courses_relevance
+from utils.logger import setup_logger
+from pipelines.education_evaluation.pydantic_models.extract_courses import CourseList
+from pipelines.education_evaluation.course_relevance import get_courses_relevance
 
 # Логирование
 logger = setup_logger(__name__)

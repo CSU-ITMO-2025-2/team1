@@ -4,9 +4,9 @@
 
 from typing import Optional
 
-from ...utils.logger import setup_logger
-from .agg_skills_llm.agg_skills import agg_skills_llm
-from .pydantic_models.agg_skills import AggregatedSkills
+from utils.logger import setup_logger
+from pipelines.skills_evaluation.agg_skills_llm.agg_skills import agg_skills_llm
+from pipelines.skills_evaluation.pydantic_models.agg_skills import AggregatedSkills
 
 # Логирование
 logger = setup_logger(__name__)

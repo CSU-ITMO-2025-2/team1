@@ -2,9 +2,9 @@
 Функция для извлечения данных о релевантности опыта с помощью LLM.
 """
 
-from ...utils.clean_text import clean_text
-from ...utils.logger import setup_logger
-from .work_relevance_llm.work_relevance import evaluate_work_exp_relevance_llm
+from utils.clean_text import clean_text
+from utils.logger import setup_logger
+from pipelines.work_exp_evaluation.work_relevance_llm.work_relevance import evaluate_work_exp_relevance_llm
 
 # Логирование
 logger = setup_logger(__name__)

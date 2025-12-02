@@ -5,9 +5,9 @@ from langchain_core.prompts import (
 )
 from langchain_core.prompts.few_shot import FewShotChatMessagePromptTemplate
 
-from .examples import parsing_examples
-from .human_prompt import parsing_human_prompt as human
-from .system_prompt import system_parsing_prompt
+from pipelines.job_description.prompts.parsing.examples import parsing_examples
+from pipelines.job_description.prompts.parsing.human_prompt import parsing_human_prompt as human
+from pipelines.job_description.prompts.parsing.system_prompt import system_parsing_prompt
 
 # Оборачиваем системный промпт
 system_prompt = SystemMessagePromptTemplate.from_template(system_parsing_prompt)

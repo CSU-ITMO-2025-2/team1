@@ -5,10 +5,10 @@
 
 from typing import Optional
 
-from ....utils.create_llm_with_retries import get_structured_llm
-from ....utils.logger import setup_logger
-from ..prompts.clean_skills.prompt_builder import clean_skills_full_prompt
-from ..pydantic_models.clean_skills import SkillsList
+from utils.create_llm_with_retries import get_structured_llm
+from utils.logger import setup_logger
+from pipelines.skills_evaluation.prompts.clean_skills.prompt_builder import clean_skills_full_prompt
+from pipelines.skills_evaluation.pydantic_models.clean_skills import SkillsList
 
 # Логирование
 logger = setup_logger(__name__)

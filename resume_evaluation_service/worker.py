@@ -9,8 +9,8 @@ import os
 import pika
 from dotenv import load_dotenv
 
-from .runner import run_pipeline_sync
-from .utils.logger import setup_logger
+from runner import run_pipeline_sync
+from utils.logger import setup_logger
 
 # Логирование
 logger = setup_logger(__name__)

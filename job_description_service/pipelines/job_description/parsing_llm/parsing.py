@@ -6,12 +6,12 @@
 import asyncio
 from typing import Optional
 
-from ....utils.create_llm_with_retries import get_structured_llm
-from ....utils.logger import setup_logger
-from ..prompts.parsing.prompt_builder import (
+from utils.create_llm_with_retries import get_structured_llm
+from utils.logger import setup_logger
+from pipelines.job_description.prompts.parsing.prompt_builder import (
     parsing_full_prompt,
 )
-from ..pydantic_models.parsing import (
+from pipelines.job_description.pydantic_models.parsing import (
     ParsedVacancyData,
 )
 
