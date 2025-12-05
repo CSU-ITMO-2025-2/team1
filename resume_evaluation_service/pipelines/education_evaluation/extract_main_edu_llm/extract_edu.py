@@ -9,12 +9,12 @@ from typing import Optional
 
 from langchain_core.messages import BaseMessage
 
-from ....utils.create_llm_with_retries import get_structured_llm
-from ....utils.logger import setup_logger
-from ..prompts.extract_main_edu.extract_main_edu_prompt_builder import (
+from utils.create_llm_with_retries import get_structured_llm
+from utils.logger import setup_logger
+from pipelines.education_evaluation.prompts.extract_main_edu.extract_main_edu_prompt_builder import (
     extract_main_edu_full_prompt,
 )
-from ..pydantic_models.extract_main_edu import (
+from pipelines.education_evaluation.pydantic_models.extract_main_edu import (
     EducationList,
 )
 

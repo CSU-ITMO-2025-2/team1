@@ -5,10 +5,10 @@
 import asyncio
 from typing import Optional
 
-from ...utils.clean_text import clean_text
-from ...utils.logger import setup_logger
-from .parsing_llm.parsing import parse_llm
-from .pydantic_models.parsing import ParsedVacancyData
+from utils.clean_text import clean_text
+from utils.logger import setup_logger
+from pipelines.job_description.parsing_llm.parsing import parse_llm
+from pipelines.job_description.pydantic_models.parsing import ParsedVacancyData
 
 # Логирование
 logger = setup_logger(__name__)

@@ -5,9 +5,9 @@
 import asyncio
 from typing import Optional
 
-from ..utils.clean_text import clean_text
-from ..utils.logger import setup_logger
-from .motivation_block_llm.motivation_block import motivation_block_llm
+from utils.clean_text import clean_text
+from utils.logger import setup_logger
+from pipelines.motivation_block_llm.motivation_block import motivation_block_llm
 
 # Логирование
 logger = setup_logger(__name__)

@@ -5,10 +5,10 @@
 
 from typing import Optional
 
-from ..prompts.extract_work_exp.prompt_builder import work_experience_full_prompt
-from ..pydantic_models.extract_work_exp import WorkExpList
-from ....utils.create_llm_with_retries import get_structured_llm
-from ....utils.logger import setup_logger
+from pipelines.work_exp_evaluation.prompts.extract_work_exp.prompt_builder import work_experience_full_prompt
+from pipelines.work_exp_evaluation.pydantic_models.extract_work_exp import WorkExpList
+from utils.create_llm_with_retries import get_structured_llm
+from utils.logger import setup_logger
 
 # Логирование
 logger = setup_logger(__name__)

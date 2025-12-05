@@ -2,8 +2,8 @@
 Функция-обертка, которая обрабатывает входной текст и запускает процесс оценки релевантности скиллов
 """
 
-from ...utils.logger import setup_logger
-from .skills_relevance_llm.skills_relevance import skills_relevance_llm
+from utils.logger import setup_logger
+from pipelines.skills_evaluation.skills_relevance_llm.skills_relevance import skills_relevance_llm
 
 # Логирование
 logger = setup_logger(__name__)

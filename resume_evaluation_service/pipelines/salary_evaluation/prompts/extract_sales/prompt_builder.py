@@ -5,9 +5,9 @@ from langchain_core.prompts import (
 )
 from langchain_core.prompts.few_shot import FewShotChatMessagePromptTemplate
 
-from .examples import salary_extraction_examples as examples_list
-from .human_prompt import salary_extraction_human_prompt as human
-from .system_prompt import system_salary_extraction_prompt as system
+from pipelines.salary_evaluation.prompts.extract_sales.examples import salary_extraction_examples as examples_list
+from pipelines.salary_evaluation.prompts.extract_sales.human_prompt import salary_extraction_human_prompt as human
+from pipelines.salary_evaluation.prompts.extract_sales.system_prompt import system_salary_extraction_prompt as system
 
 # Оборачиваем системный промпт
 salary_extraction_system_prompt = SystemMessagePromptTemplate.from_template(

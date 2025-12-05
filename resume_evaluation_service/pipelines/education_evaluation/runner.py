@@ -6,11 +6,11 @@ import asyncio
 import sys
 from typing import Any, Dict
 
-from ...utils.logger import setup_logger
-from .extract_courses import get_courses
-from .extract_edu import get_education
-from .get_report import get_report
-from .course_relevance import get_courses_relevance
+from utils.logger import setup_logger
+from pipelines.education_evaluation.extract_courses import get_courses
+from pipelines.education_evaluation.extract_edu import get_education
+from pipelines.education_evaluation.get_report import get_report
+from pipelines.education_evaluation.course_relevance import get_courses_relevance
 
 # Логирование
 logger = setup_logger(__name__)

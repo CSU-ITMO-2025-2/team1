@@ -10,12 +10,12 @@ from typing import Dict, List, Optional
 from langchain_core.messages import BaseMessage
 from pydantic import BaseModel
 
-from ....utils.create_llm_with_retries import get_structured_llm
-from ....utils.logger import setup_logger
-from ..prompts.course_relevance.course_relevance_prompt_builder import (
+from utils.create_llm_with_retries import get_structured_llm
+from utils.logger import setup_logger
+from pipelines.education_evaluation.prompts.course_relevance.course_relevance_prompt_builder import (
     relevance_course_full_prompt,
 )
-from ...education_evaluation.pydantic_models.course_relevance import create_relevance_course_list_model
+from pipelines.education_evaluation.pydantic_models.course_relevance import create_relevance_course_list_model
 
 # Логирование
 logger = setup_logger(__name__)

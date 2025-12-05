@@ -5,10 +5,10 @@
 import asyncio
 from typing import Optional
 
-from ...utils.clean_text import clean_text
-from ...utils.logger import setup_logger
-from .flyer_llm.flyer import flyer_llm
-from .pydantic_models.flyer_format import FlyerFormat
+from utils.clean_text import clean_text
+from utils.logger import setup_logger
+from pipelines.format_job_description.flyer_llm.flyer import flyer_llm
+from pipelines.format_job_description.pydantic_models.flyer_format import FlyerFormat
 
 # Логирование
 logger = setup_logger(__name__)

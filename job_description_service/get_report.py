@@ -2,12 +2,12 @@
 Пайплан создания финального отчета для отправки по api
 """
 
-from .pipelines.format_job_description.pydantic_models.flyer_format import FlyerFormat
-from .pipelines.format_job_description.pydantic_models.media import MediaFormat
-from .pipelines.format_job_description.pydantic_models.social_media import (
+from pipelines.format_job_description.pydantic_models.flyer_format import FlyerFormat
+from pipelines.format_job_description.pydantic_models.media import MediaFormat
+from pipelines.format_job_description.pydantic_models.social_media import (
     SocialMediaFormat,
 )
-from .pipelines.job_description.pydantic_models.generation import (
+from pipelines.job_description.pydantic_models.generation import (
     GeneratedVacancyDescription,
     RequirementSection,
     TaskSection,

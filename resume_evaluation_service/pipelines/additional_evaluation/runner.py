@@ -6,8 +6,8 @@ import asyncio
 import sys
 from typing import Any, Dict
 
-from ...utils.logger import setup_logger
-from .additional_info import get_additional_info
+from utils.logger import setup_logger
+from pipelines.additional_evaluation.additional_info import get_additional_info
 
 # Логирование
 logger = setup_logger(__name__)

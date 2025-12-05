@@ -5,7 +5,7 @@
 from decimal import Decimal
 from typing import Any, Optional
 
-from ...utils.logger import setup_logger
+from utils.logger import setup_logger
 
 # Логирование
 logger = setup_logger(__name__)

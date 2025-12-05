@@ -5,13 +5,13 @@
 import asyncio
 from typing import Any, Dict
 
-from .pipelines.generate_experience_block import get_experience_block
-from .pipelines.generate_motivation_block import get_motivation_block
-from .pipelines.generate_personal_block import get_personal_block
-from .utils.logger import setup_logger
-from .utils.prepare_work_evaluation_report import format_work_experience_report
-from .utils.prepare_skills_evaluation_report import format_skills_report
-from .utils.prepare_salary_evaluation_report import format_salary_report
+from pipelines.generate_experience_block import get_experience_block
+from pipelines.generate_motivation_block import get_motivation_block
+from pipelines.generate_personal_block import get_personal_block
+from utils.logger import setup_logger
+from utils.prepare_work_evaluation_report import format_work_experience_report
+from utils.prepare_skills_evaluation_report import format_skills_report
+from utils.prepare_salary_evaluation_report import format_salary_report
 
 
 # Логирование

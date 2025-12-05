@@ -5,10 +5,10 @@
 
 from typing import Optional
 
-from ....utils.create_llm_with_retries import get_structured_llm
-from ....utils.logger import setup_logger
-from ..prompts.agg_skills.prompt_builder import agg_skills_full_prompt
-from ..pydantic_models.agg_skills import AggregatedSkills
+from utils.create_llm_with_retries import get_structured_llm
+from utils.logger import setup_logger
+from pipelines.skills_evaluation.prompts.agg_skills.prompt_builder import agg_skills_full_prompt
+from pipelines.skills_evaluation.pydantic_models.agg_skills import AggregatedSkills
 
 # Логирование
 logger = setup_logger(__name__)

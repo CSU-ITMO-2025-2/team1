@@ -4,10 +4,10 @@
 
 from typing import Optional
 
-from ...utils.logger import setup_logger
-from .pydantic_models.resume_parser import ParsedResumeSkills
-from .resume_parser_llm.resume_parser import resume_parser_llm
-from ...utils.clean_text import clean_text
+from utils.logger import setup_logger
+from pipelines.skills_evaluation.pydantic_models.resume_parser import ParsedResumeSkills
+from pipelines.skills_evaluation.resume_parser_llm.resume_parser import resume_parser_llm
+from utils.clean_text import clean_text
 
 # Логирование
 logger = setup_logger(__name__)

@@ -2,8 +2,8 @@
 Функция-обертка, которая обрабатывает входной текст и запускает процесс матчинга cкиллов из резюме.
 """
 
-from ...utils.logger import setup_logger
-from .skills_match_llm.skills_match import skills_match_llm
+from utils.logger import setup_logger
+from pipelines.skills_evaluation.skills_match_llm.skills_match import skills_match_llm
 
 # Логирование
 logger = setup_logger(__name__)

@@ -5,10 +5,10 @@
 import asyncio
 from typing import Optional
 
-from ...utils.clean_text import clean_text
-from ...utils.logger import setup_logger
-from .media_llm.media import media_llm
-from .pydantic_models.media import MediaFormat
+from utils.clean_text import clean_text
+from utils.logger import setup_logger
+from pipelines.format_job_description.media_llm.media import media_llm
+from pipelines.format_job_description.pydantic_models.media import MediaFormat
 
 # Логирование
 logger = setup_logger(__name__)

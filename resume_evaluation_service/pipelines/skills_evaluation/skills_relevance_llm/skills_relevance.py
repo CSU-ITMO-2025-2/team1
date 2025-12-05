@@ -8,10 +8,10 @@ from typing import Optional
 from langchain_core.messages import BaseMessage
 from pydantic import BaseModel
 
-from ....utils.create_llm_with_retries import get_structured_llm
-from ....utils.logger import setup_logger
-from ..prompts.skills_relevance.prompt_builder import skills_relevance_full_prompt
-from ..pydantic_models.skills_relevance import (
+from utils.create_llm_with_retries import get_structured_llm
+from utils.logger import setup_logger
+from pipelines.skills_evaluation.prompts.skills_relevance.prompt_builder import skills_relevance_full_prompt
+from pipelines.skills_evaluation.pydantic_models.skills_relevance import (
     create_pydantic_skills_relevance_matching_model,
 )
 

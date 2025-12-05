@@ -1,0 +1,124 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  # Тесты core_api
+  test-core-api:
+    runs-on: ubuntu-latest
+    container: python:3.12-slim
+    continue-on-error: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install dependencies
+        working-directory: core_api
+        run: uv sync
+
+      - name: Run tests
+        working-directory: core_api
+        run: uv run pytest --junitxml=tests-report.xml
+
+      - name: Upload JUnit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: core_api-tests-report
+          path: core_api/tests-report.xml
+
+  # Сборка и пуш образов в Docker Hub
+  build-images:
+    runs-on: ubuntu-latest
+    needs: test-core-api
+    if: github.ref == 'refs/heads/main'
+    env:
+      REGISTRY: docker.io
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      IMAGE_CORE_API: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/core-api
+      IMAGE_FRONTEND: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/frontend
+      IMAGE_RESUME_WORKER: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/resume-evaluation-worker
+      IMAGE_JOB_DESCR_WORKER: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/job-description-worker
+      IMAGE_QUESTION_WORKER: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/question-generation-worker
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push core_api image
+        run: |
+          docker build -t "$IMAGE_CORE_API:${GITHUB_SHA}" -f core_api/Dockerfile .
+          docker push "$IMAGE_CORE_API:${GITHUB_SHA}"
+
+      - name: Build and push frontend image
+        run: |
+          docker build -t "$IMAGE_FRONTEND:${GITHUB_SHA}" -f frontend/Dockerfile .
+          docker push "$IMAGE_FRONTEND:${GITHUB_SHA}"
+
+      - name: Build and push resume worker image
+        run: |
+          docker build -t "$IMAGE_RESUME_WORKER:${GITHUB_SHA}" -f resume_evaluation_service/Dockerfile .
+          docker push "$IMAGE_RESUME_WORKER:${GITHUB_SHA}"
+
+      - name: Build and push job description worker image
+        run: |
+          docker build -t "$IMAGE_JOB_DESCR_WORKER:${GITHUB_SHA}" -f job_description_service/Dockerfile .
+          docker push "$IMAGE_JOB_DESCR_WORKER:${GITHUB_SHA}"
+
+      - name: Build and push question worker image
+        run: |
+          docker build -t "$IMAGE_QUESTION_WORKER:${GITHUB_SHA}" -f question_generation_service/Dockerfile .
+          docker push "$IMAGE_QUESTION_WORKER:${GITHUB_SHA}"
+
+  # Деплой через Helm
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-images
+    if: github.ref == 'refs/heads/main'
+    container:
+      image: alpine/helm:3.16.1
+      options: >-
+        --entrypoint ""
+    env:
+      IMAGE_CORE_API: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/core-api
+      IMAGE_FRONTEND: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/frontend
+      IMAGE_RESUME_WORKER: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/resume-evaluation-worker
+      IMAGE_JOB_DESCR_WORKER: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/job-description-worker
+      IMAGE_QUESTION_WORKER: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/question-generation-worker
+      KUBECONFIG_CONTENT: ${{ secrets.KUBECONFIG_CONTENT }}
+    environment:
+      name: production
+      url: https://team1 # заменить на актуальный из кубера
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy with Helm
+        run: |
+          echo "$KUBECONFIG_CONTENT" > kubeconfig
+          export KUBECONFIG=$(pwd)/kubeconfig
+          helm version
+          helm upgrade --install team1 devops/helm \
+            --namespace team1-ns --create-namespace \
+            --set image.coreApi.repository="$IMAGE_CORE_API" \
+            --set image.coreApi.tag="${GITHUB_SHA}" \
+            --set image.frontend.repository="$IMAGE_FRONTEND" \
+            --set image.frontend.tag="${GITHUB_SHA}" \
+            --set image.resumeWorker.repository="$IMAGE_RESUME_WORKER" \
+            --set image.resumeWorker.tag="${GITHUB_SHA}" \
+            --set image.jobDescrWorker.repository="$IMAGE_JOB_DESCR_WORKER" \
+            --set image.jobDescrWorker.tag="${GITHUB_SHA}" \
+            --set image.questionWorker.repository="$IMAGE_QUESTION_WORKER" \
+            --set image.questionWorker.tag="${GITHUB_SHA}" \
+            -f devops/helm/values.yaml

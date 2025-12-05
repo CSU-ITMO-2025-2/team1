@@ -4,11 +4,11 @@
 
 from typing import Optional
 
-from ...pipelines.education_evaluation.extract_main_edu_llm.extract_edu import (
+from pipelines.education_evaluation.extract_main_edu_llm.extract_edu import (
     extract_main_edu_llm,
 )
-from ...utils.clean_text import clean_text
-from ...utils.logger import setup_logger
+from utils.clean_text import clean_text
+from utils.logger import setup_logger
 
 # Логирование
 logger = setup_logger(__name__)

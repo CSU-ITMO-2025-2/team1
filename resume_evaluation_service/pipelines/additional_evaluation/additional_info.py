@@ -4,10 +4,10 @@
 
 from typing import Optional
 
-from ...utils.clean_text import clean_text
-from ...utils.logger import setup_logger
-from .additional_match_llm.additional_llm import additional_llm
-from .pydantic_models.additional_info import WorkScheduleComparison
+from utils.clean_text import clean_text
+from utils.logger import setup_logger
+from pipelines.additional_evaluation.additional_match_llm.additional_llm import additional_llm
+from pipelines.additional_evaluation.pydantic_models.additional_info import WorkScheduleComparison
 
 # Логирование
 logger = setup_logger(__name__)

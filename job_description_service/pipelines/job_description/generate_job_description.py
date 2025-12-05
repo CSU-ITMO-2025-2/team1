@@ -5,10 +5,10 @@
 import asyncio
 from typing import Optional
 
-from ...utils.clean_text import clean_text
-from ...utils.logger import setup_logger
-from .generation_llm.generation import job_generation_llm
-from .pydantic_models.generation import GeneratedVacancyDescription
+from utils.clean_text import clean_text
+from utils.logger import setup_logger
+from pipelines.job_description.generation_llm.generation import job_generation_llm
+from pipelines.job_description.pydantic_models.generation import GeneratedVacancyDescription
 
 # Логирование
 logger = setup_logger(__name__)

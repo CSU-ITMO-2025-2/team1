@@ -5,9 +5,9 @@
 import asyncio
 from typing import Any, Dict
 
-from ...utils.logger import setup_logger
-from .extract_sales import get_salary
-from .get_report import compare_salaries
+from utils.logger import setup_logger
+from pipelines.salary_evaluation.extract_sales import get_salary
+from pipelines.salary_evaluation.get_report import compare_salaries
 
 # Логирование
 logger = setup_logger(__name__)

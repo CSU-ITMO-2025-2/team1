@@ -6,12 +6,12 @@
 import asyncio
 from typing import Optional
 
-from ....utils.create_llm_with_retries import get_structured_llm
-from ....utils.logger import setup_logger
-from ..prompts.generation.prompt_builder import (
+from utils.create_llm_with_retries import get_structured_llm
+from utils.logger import setup_logger
+from pipelines.job_description.prompts.generation.prompt_builder import (
     generation_full_prompt,
 )
-from ..pydantic_models.generation import (
+from pipelines.job_description.pydantic_models.generation import (
     GeneratedVacancyDescription,
 )
 

@@ -6,10 +6,10 @@
 import asyncio
 from typing import Optional
 
-from ...utils.create_llm_with_retries import get_structured_llm
-from ...utils.logger import setup_logger
-from ..prompts.motivation_block.prompt_builder import motivaion_block_full_prompt
-from ..pydantic_models.questions_blocks import MotivationBlock
+from utils.create_llm_with_retries import get_structured_llm
+from utils.logger import setup_logger
+from pipelines.prompts.motivation_block.prompt_builder import motivaion_block_full_prompt
+from pipelines.pydantic_models.questions_blocks import MotivationBlock
 
 # Логирование
 logger = setup_logger(__name__)

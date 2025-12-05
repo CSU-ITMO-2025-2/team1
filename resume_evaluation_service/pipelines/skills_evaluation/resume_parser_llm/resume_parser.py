@@ -5,10 +5,10 @@
 
 from typing import Optional
 
-from ....utils.create_llm_with_retries import get_structured_llm
-from ....utils.logger import setup_logger
-from ..prompts.resume_parser.prompt_builder import resume_parser_full_prompt
-from ..pydantic_models.resume_parser import ParsedResumeSkills
+from utils.create_llm_with_retries import get_structured_llm
+from utils.logger import setup_logger
+from pipelines.skills_evaluation.prompts.resume_parser.prompt_builder import resume_parser_full_prompt
+from pipelines.skills_evaluation.pydantic_models.resume_parser import ParsedResumeSkills
 
 # Логирование
 logger = setup_logger(__name__)

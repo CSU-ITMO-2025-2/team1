@@ -4,10 +4,10 @@
 
 from typing import Optional
 
-from .extract_reqs_llm.extract_reqs import extract_reqs_llm
-from .pydantic_models.extract_reqs import ParsedJobRequirements
-from ...utils.clean_text import clean_text
-from ...utils.logger import setup_logger
+from pipelines.skills_evaluation.extract_reqs_llm.extract_reqs import extract_reqs_llm
+from pipelines.skills_evaluation.pydantic_models.extract_reqs import ParsedJobRequirements
+from utils.clean_text import clean_text
+from utils.logger import setup_logger
 
 # Логирование
 logger = setup_logger(__name__)

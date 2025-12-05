@@ -5,10 +5,10 @@
 
 from typing import Optional
 
-from ....utils.create_llm_with_retries import get_structured_llm
-from ....utils.logger import setup_logger
-from ..prompts.extract_reqs.prompt_builder import extraction_reqs_full_prompt
-from ..pydantic_models.extract_reqs import ParsedJobRequirements
+from utils.create_llm_with_retries import get_structured_llm
+from utils.logger import setup_logger
+from pipelines.skills_evaluation.prompts.extract_reqs.prompt_builder import extraction_reqs_full_prompt
+from pipelines.skills_evaluation.pydantic_models.extract_reqs import ParsedJobRequirements
 
 # Логирование
 logger = setup_logger(__name__)

@@ -4,7 +4,7 @@ WORKDIR /app
 
 RUN pip install --no-cache-dir --trusted-host pypi.org --trusted-host files.pythonhosted.org uv
 
-COPY job_description_service/pyproject.toml job_description_service/uv.lock ./
+COPY pyproject.toml uv.lock ./
 
 RUN UV_HTTP_TIMEOUT=300 uv sync \
     --allow-insecure-host pypi.org \
@@ -14,6 +14,6 @@ RUN UV_HTTP_TIMEOUT=300 uv sync \
 
 ENV PYTHONPATH=/app
 
-COPY job_description_service/ ./job_description_service
+COPY . .
 
-CMD ["uv", "run", "python", "-m", "job_description_service.worker"]
+CMD ["uv", "run", "python", "-m", "worker"]

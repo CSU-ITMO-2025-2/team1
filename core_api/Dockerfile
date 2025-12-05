@@ -4,7 +4,7 @@ WORKDIR /app
 
 RUN pip install --no-cache-dir --trusted-host pypi.org --trusted-host files.pythonhosted.org uv
 
-COPY core_api/pyproject.toml core_api/uv.lock ./
+COPY pyproject.toml uv.lock ./
 
 RUN UV_HTTP_TIMEOUT=300 uv sync \
     --allow-insecure-host pypi.org \
@@ -12,7 +12,7 @@ RUN UV_HTTP_TIMEOUT=300 uv sync \
     --allow-insecure-host github.com \
     --no-native-tls
 
-COPY core_api/ .
+COPY . .
 
 # Создаем директорию для миграций, исправляем окончания строк и даем права на выполнение
 RUN mkdir -p alembic/versions && \
@@ -21,5 +21,7 @@ RUN mkdir -p alembic/versions && \
 
 # Устанавливаем ENTRYPOINT
 ENTRYPOINT ["./entrypoint.sh"]
+
+ENV PYTHONPATH=/app/app:${PYTHONPATH}
 
 CMD ["uv", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
