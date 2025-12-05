@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 jobs:
-  # Тесты core_api
+  # Тесты core_api (мягкие)
   test-core-api:
     runs-on: ubuntu-latest
     container: python:3.12-slim
@@ -57,28 +57,33 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push core_api image
+        working-directory: core_api
         run: |
-          docker build -t "$IMAGE_CORE_API:${GITHUB_SHA}" -f core_api/Dockerfile .
+          docker build -t "$IMAGE_CORE_API:${GITHUB_SHA}" .
           docker push "$IMAGE_CORE_API:${GITHUB_SHA}"
 
       - name: Build and push frontend image
+        working-directory: frontend
         run: |
-          docker build -t "$IMAGE_FRONTEND:${GITHUB_SHA}" -f frontend/Dockerfile .
+          docker build -t "$IMAGE_FRONTEND:${GITHUB_SHA}" .
           docker push "$IMAGE_FRONTEND:${GITHUB_SHA}"
 
       - name: Build and push resume worker image
+        working-directory: resume_evaluation_service
         run: |
-          docker build -t "$IMAGE_RESUME_WORKER:${GITHUB_SHA}" -f resume_evaluation_service/Dockerfile .
+          docker build -t "$IMAGE_RESUME_WORKER:${GITHUB_SHA}" .
           docker push "$IMAGE_RESUME_WORKER:${GITHUB_SHA}"
 
       - name: Build and push job description worker image
+        working-directory: job_description_service
         run: |
-          docker build -t "$IMAGE_JOB_DESCR_WORKER:${GITHUB_SHA}" -f job_description_service/Dockerfile .
+          docker build -t "$IMAGE_JOB_DESCR_WORKER:${GITHUB_SHA}" .
           docker push "$IMAGE_JOB_DESCR_WORKER:${GITHUB_SHA}"
 
       - name: Build and push question worker image
+        working-directory: question_generation_service
         run: |
-          docker build -t "$IMAGE_QUESTION_WORKER:${GITHUB_SHA}" -f question_generation_service/Dockerfile .
+          docker build -t "$IMAGE_QUESTION_WORKER:${GITHUB_SHA}" .
           docker push "$IMAGE_QUESTION_WORKER:${GITHUB_SHA}"
 
   # Деплой через Helm
@@ -91,15 +96,15 @@ jobs:
       options: >-
         --entrypoint ""
     env:
-      IMAGE_CORE_API: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/core-api
-      IMAGE_FRONTEND: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/frontend
-      IMAGE_RESUME_WORKER: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/resume-evaluation-worker
-      IMAGE_JOB_DESCR_WORKER: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/job-description-worker
-      IMAGE_QUESTION_WORKER: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/question-generation-worker
+      IMAGE_CORE_API: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/aith-team1-core-api
+      IMAGE_FRONTEND: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/aith-team1-frontend
+      IMAGE_RESUME_WORKER: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/aith-team1-resume-evaluation-worker
+      IMAGE_JOB_DESCR_WORKER: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/aith-team1-job-description-worker
+      IMAGE_QUESTION_WORKER: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/aith-team1-question-generation-worker
       KUBECONFIG_CONTENT: ${{ secrets.KUBECONFIG_CONTENT }}
     environment:
       name: production
-      url: https://team1 # заменить на актуальный из кубера
+      url: https://team1 # потом поменяешь на реальный URL из ингресса
     steps:
       - name: Checkout
         uses: actions/checkout@v4
