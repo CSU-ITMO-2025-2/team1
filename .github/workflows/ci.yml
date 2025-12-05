@@ -40,11 +40,11 @@ jobs:
     env:
       REGISTRY: docker.io
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-      IMAGE_CORE_API: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/core-api
-      IMAGE_FRONTEND: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/frontend
-      IMAGE_RESUME_WORKER: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/resume-evaluation-worker
-      IMAGE_JOB_DESCR_WORKER: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/job-description-worker
-      IMAGE_QUESTION_WORKER: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/question-generation-worker
+      IMAGE_CORE_API: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/aith-team1-core-api
+      IMAGE_FRONTEND: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/aith-team1-frontend
+      IMAGE_RESUME_WORKER: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/aith-team1-resume-evaluation-worker
+      IMAGE_JOB_DESCR_WORKER: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/aith-team1-job-description-worker
+      IMAGE_QUESTION_WORKER: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/aith-team1-question-generation-worker
     steps:
       - name: Checkout
         uses: actions/checkout@v4
