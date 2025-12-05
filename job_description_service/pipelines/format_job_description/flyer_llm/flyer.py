@@ -9,7 +9,7 @@ from typing import Optional
 from utils.create_llm_with_retries import get_structured_llm
 from utils.logger import setup_logger
 from pipelines.format_job_description.prompts.flyer.prompt_builder import flyer_full_prompt
-from pydantic_models.flyer_format import (
+from pipelines.format_job_description.pydantic_models.flyer_format import (
     FlyerFormat,
 )
 

@@ -25,7 +25,12 @@ spec:
             - secretRef:
                 name: {{ .Release.Name }}-secrets
           resources:
-{{- toYaml .Values.resources.coreApi | nindent 12 }}
+            requests:
+              cpu: "300m"
+              memory: "512Mi"
+            limits:
+              cpu: "300m"
+              memory: "512Mi"
 
 ---
 apiVersion: apps/v1
@@ -52,7 +57,12 @@ spec:
             - secretRef:
                 name: {{ .Release.Name }}-secrets
           resources:
-{{- toYaml .Values.resources.worker | nindent 12 }}
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+            limits:
+              cpu: "200m"
+              memory: "512Mi"
 
 ---
 apiVersion: apps/v1
@@ -79,7 +89,12 @@ spec:
             - secretRef:
                 name: {{ .Release.Name }}-secrets
           resources:
-{{- toYaml .Values.resources.worker | nindent 12 }}
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+            limits:
+              cpu: "200m"
+              memory: "512Mi"
 
 ---
 apiVersion: apps/v1
@@ -106,7 +121,12 @@ spec:
             - secretRef:
                 name: {{ .Release.Name }}-secrets
           resources:
-{{- toYaml .Values.resources.worker | nindent 12 }}
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+            limits:
+              cpu: "200m"
+              memory: "512Mi"
 
 ---
 apiVersion: apps/v1
@@ -135,4 +155,9 @@ spec:
             - secretRef:
                 name: {{ .Release.Name }}-secrets
           resources:
-{{- toYaml .Values.resources.frontend | nindent 12 }}
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "100m"
+              memory: "256Mi"

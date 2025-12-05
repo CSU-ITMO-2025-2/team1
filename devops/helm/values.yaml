@@ -2,32 +2,32 @@ image:
   authService:
     repository: erofeevdma/aith-team1-auth-service
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
 
   coreApi:
     repository: erofeevdma/aith-team1-core-api
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
 
   frontend:
     repository: erofeevdma/aith-team1-frontend
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
 
   resumeWorker:
     repository: erofeevdma/aith-team1-resume-evaluation-service
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
 
   jobDescrWorker:
     repository: erofeevdma/aith-team1-job-description-service
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
 
   questionWorker:
     repository: erofeevdma/aith-team1-question-generation-service
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
 
 replicaCount:
   coreApi: 1
@@ -36,52 +36,27 @@ replicaCount:
 
 rabbitmq:
   image: rabbitmq:3.13-management-alpine
-  username: guest # заменить на волт
-  password: guest 
+  username: guest
+  password: "" 
   vhost: "/"
   port: 5672
   uiPort: 15672
 
 postgres:
   image: postgres:16
-  username: postgres # заменить на волт
-  password: postgres
+  username: postgres
+  password: ""
   db: hr_assist
   port: 5432
 
 ingress:
   enabled: true
-  host: #### подставить API
+  host: ""
   className: nginx
   tls: false
 
 env:
-  openaiModelName: ""
-  openaiApiBase: ""
+  openaiModelName: "gpt-4.1-mini"
+  openaiApiBase: "https://api.openai.com/v1"
   logLevel: INFO
 
-secrets:
-  useExternal: true
-
-resources:
-  coreApi:
-    requests:
-      cpu: 200m
-      memory: 256Mi
-    limits:
-      cpu: 500m
-      memory: 512Mi
-  frontend:
-    requests:
-      cpu: 100m
-      memory: 128Mi
-    limits:
-      cpu: 300m
-      memory: 256Mi
-  worker:
-    requests:
-      cpu: 100m
-      memory: 128Mi
-    limits:
-      cpu: 300m
-      memory: 256Mi

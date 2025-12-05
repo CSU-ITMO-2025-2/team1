@@ -18,22 +18,23 @@ spec:
           image: "{{ .Values.postgres.image }}"
           env:
             - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Release.Name }}-secrets
-                  key: POSTGRES_USER
+              value: {{ .Values.postgres.username | quote }}
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .Release.Name }}-secrets
                   key: POSTGRES_PASSWORD
             - name: POSTGRES_DB
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Release.Name }}-secrets
-                  key: POSTGRES_DB
+              value: {{ .Values.postgres.db | quote }}
           ports:
             - containerPort: 5432
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+            limits:
+              cpu: "200m"
+              memory: "512Mi"
 ---
 apiVersion: v1
 kind: Service
@@ -64,18 +65,29 @@ spec:
       containers:
         - name: rabbitmq
           image: "{{ .Values.rabbitmq.image }}"
-          envFrom:
-            - secretRef:
-                name: {{ .Release.Name }}-secrets
           env:
+            - name: RABBITMQ_DEFAULT_USER
+              value: {{ .Values.rabbitmq.username | quote }}
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
+                  key: RABBITMQ_DEFAULT_PASS
             - name: RABBITMQ_DEFAULT_VHOST
               valueFrom:
-                configMapRef:
+                configMapKeyRef:
                   name: {{ .Release.Name }}-config
                   key: RABBITMQ_DEFAULT_VHOST
           ports:
             - containerPort: 5672
             - containerPort: 15672
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+            limits:
+              cpu: "200m"
+              memory: "512Mi"
 ---
 apiVersion: v1
 kind: Service

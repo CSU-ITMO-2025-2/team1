@@ -22,4 +22,6 @@ RUN mkdir -p alembic/versions && \
 # Устанавливаем ENTRYPOINT
 ENTRYPOINT ["./entrypoint.sh"]
 
+ENV PYTHONPATH=/app/app:${PYTHONPATH}
+
 CMD ["uv", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
