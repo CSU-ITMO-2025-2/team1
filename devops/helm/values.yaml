@@ -60,3 +60,12 @@ env:
   openaiApiBase: "https://api.openai.com/v1"
   logLevel: INFO
 
+secrets:
+  useExternal: false
+  useExisting: true
+  existingSecretName: "hr-assist-secrets"
+  openaiApiKey: ""
+  kcClientSecret: ""
+  rabbitmqPassword: ""
+  postgresPassword: ""
+# временно пока не разобрались с external secrets
