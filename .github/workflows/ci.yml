@@ -114,7 +114,7 @@ jobs:
           echo "$KUBECONFIG_CONTENT" > kubeconfig
           export KUBECONFIG=$(pwd)/kubeconfig
           helm version
-          helm upgrade --install team1 devops/helm \
+          helm upgrade --install hr-assist devops/helm \
             --namespace team1-ns --create-namespace \
             --set image.coreApi.repository="$IMAGE_CORE_API" \
             --set image.coreApi.tag="${GITHUB_SHA}" \
