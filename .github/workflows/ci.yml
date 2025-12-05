@@ -104,7 +104,7 @@ jobs:
       KUBECONFIG_CONTENT: ${{ secrets.KUBECONFIG_CONTENT }}
     environment:
       name: production
-      url: https://team1 # потом поменяешь на реальный URL из ингресса
+      url: https://team1
     steps:
       - name: Checkout
         uses: actions/checkout@v4
