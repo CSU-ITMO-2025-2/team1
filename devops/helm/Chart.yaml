@@ -4,3 +4,14 @@ description: HR Assist microservices (core_api + workers + frontend)
 type: application
 version: 0.1.0
 appVersion: "0.1.0"
+
+dependencies:
+  - name: job-description-service
+    version: 0.1.0
+    repository: "file://./charts/job-description-service"
+  - name: question-generation-service
+    version: 0.1.0
+    repository: "file://./charts/question-generation-service"
+  - name: resume-evaluation-service
+    version: 0.1.0
+    repository: "file://./charts/resume-evaluation-service"

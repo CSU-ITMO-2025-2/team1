@@ -14,25 +14,9 @@ image:
     tag: latest
     pullPolicy: Always
 
-  resumeWorker:
-    repository: erofeevdma/aith-team1-resume-evaluation-service
-    tag: latest
-    pullPolicy: Always
-
-  jobDescrWorker:
-    repository: erofeevdma/aith-team1-job-description-service
-    tag: latest
-    pullPolicy: Always
-
-  questionWorker:
-    repository: erofeevdma/aith-team1-question-generation-service
-    tag: latest
-    pullPolicy: Always
-
 replicaCount:
   coreApi: 1
   frontend: 1
-  workers: 1
 
 rabbitmq:
   image: rabbitmq:3.13-management-alpine
@@ -69,3 +53,40 @@ secrets:
   rabbitmqPassword: ""
   postgresPassword: ""
 # временно пока не разобрались с external secrets
+
+# LLM сервисы вынесены в subchart-ы
+# Job Description Service subchart
+job-description-service:
+  image:
+    repository: erofeevdma/aith-team1-job-description-service
+    tag: latest
+    pullPolicy: Always
+  replicaCount: 1
+  configMap:
+    name: ""  # Будет установлено автоматически
+  secret:
+    name: ""  # Будет установлено автоматически
+
+# Question Generation Service subchart
+question-generation-service:
+  image:
+    repository: erofeevdma/aith-team1-question-generation-service
+    tag: latest
+    pullPolicy: Always
+  replicaCount: 1
+  configMap:
+    name: ""  # Будет установлено автоматически
+  secret:
+    name: ""  # Будет установлено автоматически
+
+# Resume Evaluation Service subchart
+resume-evaluation-service:
+  image:
+    repository: erofeevdma/aith-team1-resume-evaluation-service
+    tag: latest
+    pullPolicy: Always
+  replicaCount: 1
+  configMap:
+    name: ""  # Будет установлено автоматически
+  secret:
+    name: ""  # Будет установлено автоматически
