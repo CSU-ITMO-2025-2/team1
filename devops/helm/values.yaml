@@ -45,14 +45,21 @@ env:
   logLevel: INFO
 
 secrets:
-  useExternal: false
-  useExisting: true
-  existingSecretName: "hr-assist-secrets"
+  # Использование ExternalSecret из Vault
+  useExternal: true  # Установите true для использования Vault через ExternalSecret
+  useExisting: false  # Установите false, если используете ExternalSecret
+  existingSecretName: ""  # Не используется при useExternal: true
+  
+  # Настройки Vault (используются только при useExternal: true)
+  vault:
+    path: "team1/hr-assist"  # Путь к секретам в Vault
+    # Секреты в Vault: OPENAI_API_KEY, KC_CLIENT_SECRET, RABBITMQ_DEFAULT_PASS, POSTGRES_PASSWORD
+  
+  # Эти значения не используются при useExternal: true (секреты берутся из Vault)
   openaiApiKey: ""
   kcClientSecret: ""
   rabbitmqPassword: ""
   postgresPassword: ""
-# временно пока не разобрались с external secrets
 
 # LLM сервисы вынесены в subchart-ы
 # Job Description Service subchart
@@ -63,9 +70,13 @@ job-description-service:
     pullPolicy: Always
   replicaCount: 1
   configMap:
-    name: ""  # Будет установлено автоматически
+    # Если пусто, будет использовано: <release-name>-config
+    name: ""
   secret:
-    name: ""  # Будет установлено автоматически
+    # Если пусто, будет использовано: <release-name>-secrets
+    # При использовании Vault (useExternal: true) секрет создается автоматически через ExternalSecret
+    # с именем: <release-name>-secrets
+    name: ""
 
 # Question Generation Service subchart
 question-generation-service:
@@ -75,9 +86,13 @@ question-generation-service:
     pullPolicy: Always
   replicaCount: 1
   configMap:
-    name: ""  # Будет установлено автоматически
+    # Если пусто, будет использовано: <release-name>-config
+    name: ""
   secret:
-    name: ""  # Будет установлено автоматически
+    # Если пусто, будет использовано: <release-name>-secrets
+    # При использовании Vault (useExternal: true) секрет создается автоматически через ExternalSecret
+    # с именем: <release-name>-secrets
+    name: ""
 
 # Resume Evaluation Service subchart
 resume-evaluation-service:
@@ -87,6 +102,10 @@ resume-evaluation-service:
     pullPolicy: Always
   replicaCount: 1
   configMap:
-    name: ""  # Будет установлено автоматически
+    # Если пусто, будет использовано: <release-name>-config
+    name: ""
   secret:
-    name: ""  # Будет установлено автоматически
+    # Если пусто, будет использовано: <release-name>-secrets
+    # При использовании Vault (useExternal: true) секрет создается автоматически через ExternalSecret
+    # с именем: <release-name>-secrets
+    name: ""
