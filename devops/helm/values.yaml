@@ -5,13 +5,13 @@ image:
     pullPolicy: Always
 
   coreApi:
-    repository: erofeevdma/aith-team1-core-api
-    tag: latest
+    repository: docker.io/erofeevdma/aith-team1-core-api
+    tag: b6453281e7413f3e35e8c7059130b503b763168e
     pullPolicy: Always
 
   frontend:
-    repository: erofeevdma/aith-team1-frontend
-    tag: latest
+    repository: docker.io/erofeevdma/aith-team1-frontend
+    tag: b6453281e7413f3e35e8c7059130b503b763168e
     pullPolicy: Always
 
 replicaCount:
@@ -45,67 +45,48 @@ env:
   logLevel: INFO
 
 secrets:
-  # Использование ExternalSecret из Vault
-  useExternal: true  # Установите true для использования Vault через ExternalSecret
-  useExisting: false  # Установите false, если используете ExternalSecret
-  existingSecretName: ""  # Не используется при useExternal: true
+  useExternal: false
+  useExisting: true
+  existingSecretName: "hr-assist-secrets"
   
-  # Настройки Vault (используются только при useExternal: true)
   vault:
-    path: "team1/hr-assist"  # Путь к секретам в Vault
-    # Секреты в Vault: OPENAI_API_KEY, KC_CLIENT_SECRET, RABBITMQ_DEFAULT_PASS, POSTGRES_PASSWORD
+    path: "team1/hr-assist"
+    username: ""
   
-  # Эти значения не используются при useExternal: true (секреты берутся из Vault)
   openaiApiKey: ""
   kcClientSecret: ""
   rabbitmqPassword: ""
   postgresPassword: ""
 
-# LLM сервисы вынесены в subchart-ы
-# Job Description Service subchart
 job-description-service:
   image:
-    repository: erofeevdma/aith-team1-job-description-service
-    tag: latest
+    repository: docker.io/erofeevdma/aith-team1-job-description-worker
+    tag: b6453281e7413f3e35e8c7059130b503b763168e
     pullPolicy: Always
   replicaCount: 1
   configMap:
-    # Если пусто, будет использовано: <release-name>-config
     name: ""
   secret:
-    # Если пусто, будет использовано: <release-name>-secrets
-    # При использовании Vault (useExternal: true) секрет создается автоматически через ExternalSecret
-    # с именем: <release-name>-secrets
-    name: ""
+    name: "hr-assist-secrets"
 
-# Question Generation Service subchart
 question-generation-service:
   image:
-    repository: erofeevdma/aith-team1-question-generation-service
-    tag: latest
+    repository: docker.io/erofeevdma/aith-team1-question-generation-worker
+    tag: b6453281e7413f3e35e8c7059130b503b763168e
     pullPolicy: Always
   replicaCount: 1
   configMap:
-    # Если пусто, будет использовано: <release-name>-config
     name: ""
   secret:
-    # Если пусто, будет использовано: <release-name>-secrets
-    # При использовании Vault (useExternal: true) секрет создается автоматически через ExternalSecret
-    # с именем: <release-name>-secrets
-    name: ""
+    name: "hr-assist-secrets"
 
-# Resume Evaluation Service subchart
 resume-evaluation-service:
   image:
-    repository: erofeevdma/aith-team1-resume-evaluation-service
-    tag: latest
+    repository: docker.io/erofeevdma/aith-team1-resume-evaluation-worker
+    tag: b6453281e7413f3e35e8c7059130b503b763168e
     pullPolicy: Always
   replicaCount: 1
   configMap:
-    # Если пусто, будет использовано: <release-name>-config
     name: ""
   secret:
-    # Если пусто, будет использовано: <release-name>-secrets
-    # При использовании Vault (useExternal: true) секрет создается автоматически через ExternalSecret
-    # с именем: <release-name>-secrets
-    name: ""
+    name: "hr-assist-secrets"
