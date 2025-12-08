@@ -1,5 +1,6 @@
-{{- if not .Values.rbac.enabled }} # fallback к старому 
+{{- if .Values.rbac.enabled }} # fallback к старому 
 ---
+# Core API Deployment with RBAC and isolated secrets
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -14,6 +15,7 @@ spec:
       labels:
         app: core-api
     spec:
+      serviceAccountName: {{ .Release.Name }}-core-api-sa # ограничиваем сертификатом
       containers:
         - name: core-api
           image: "{{ .Values.image.coreApi.repository }}:{{ .Values.image.coreApi.tag }}"
@@ -24,7 +26,7 @@ spec:
             - configMapRef:
                 name: {{ .Release.Name }}-config
             - secretRef:
-                name: {{ .Values.secrets.existingSecretName | default (printf "%s-secrets" .Release.Name) }}
+                name: {{ .Release.Name }}-core-api-secrets
           resources:
             requests:
               cpu: "300m"
@@ -34,6 +36,7 @@ spec:
               memory: "512Mi"
 
 ---
+# Resume Evaluation Worker with RBAC and isolated secrets
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -48,6 +51,7 @@ spec:
       labels:
         app: resume-worker
     spec:
+      serviceAccountName: {{ .Release.Name }}-workers-sa # ограничиваем сертификатом
       containers:
         - name: resume-worker
           image: "{{ .Values.image.resumeWorker.repository }}:{{ .Values.image.resumeWorker.tag }}"
@@ -56,7 +60,7 @@ spec:
             - configMapRef:
                 name: {{ .Release.Name }}-config
             - secretRef:
-                name: {{ .Values.secrets.existingSecretName | default (printf "%s-secrets" .Release.Name) }}
+                name: {{ .Release.Name }}-workers-secrets
           resources:
             requests:
               cpu: "200m"
@@ -66,6 +70,7 @@ spec:
               memory: "512Mi"
 
 ---
+# Job Description Worker with RBAC and isolated secrets
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -80,6 +85,7 @@ spec:
       labels:
         app: job-descr-worker
     spec:
+      serviceAccountName: {{ .Release.Name }}-workers-sa # ограничиваем сертификатом
       containers:
         - name: job-descr-worker
           image: "{{ .Values.image.jobDescrWorker.repository }}:{{ .Values.image.jobDescrWorker.tag }}"
@@ -88,7 +94,7 @@ spec:
             - configMapRef:
                 name: {{ .Release.Name }}-config
             - secretRef:
-                name: {{ .Values.secrets.existingSecretName | default (printf "%s-secrets" .Release.Name) }}
+                name: {{ .Release.Name }}-workers-secrets
           resources:
             requests:
               cpu: "200m"
@@ -98,10 +104,11 @@ spec:
               memory: "512Mi"
 
 ---
+# Question Generation Worker with RBAC and isolated secrets
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-question-worker
+  name: {{ .Release.Name }}-question-worker 
 spec:
   replicas: {{ .Values.replicaCount.workers }}
   selector:
@@ -112,6 +119,7 @@ spec:
       labels:
         app: question-worker
     spec:
+      serviceAccountName: {{ .Release.Name }}-workers-sa # ограничиваем сертификатом
       containers:
         - name: question-worker
           image: "{{ .Values.image.questionWorker.repository }}:{{ .Values.image.questionWorker.tag }}"
@@ -120,7 +128,7 @@ spec:
             - configMapRef:
                 name: {{ .Release.Name }}-config
             - secretRef:
-                name: {{ .Values.secrets.existingSecretName | default (printf "%s-secrets" .Release.Name) }}
+                name: {{ .Release.Name }}-workers-secrets
           resources:
             requests:
               cpu: "200m"
@@ -130,6 +138,7 @@ spec:
               memory: "512Mi"
 
 ---
+# Frontend Deployment with RBAC and isolated secrets
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -144,6 +153,7 @@ spec:
       labels:
         app: frontend
     spec:
+      serviceAccountName: {{ .Release.Name }}-frontend-sa # ограничиваем сертификатом
       containers:
         - name: frontend
           image: "{{ .Values.image.frontend.repository }}:{{ .Values.image.frontend.tag }}"
@@ -154,7 +164,7 @@ spec:
             - configMapRef:
                 name: {{ .Release.Name }}-config
             - secretRef:
-                name: {{ .Values.secrets.existingSecretName | default (printf "%s-secrets" .Release.Name) }}
+                name: {{ .Release.Name }}-frontend-secrets
           resources:
             requests:
               cpu: "100m"
@@ -162,3 +172,4 @@ spec:
             limits:
               cpu: "100m"
               memory: "256Mi"
+{{- end }}
