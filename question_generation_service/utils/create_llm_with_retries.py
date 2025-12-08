@@ -1,7 +1,7 @@
 """
 Функция для создания LLM с structured_output и температурой, зависящей от номера попытки.
 """
-
+from langchain_mistralai import ChatMistralAI
 import os
 from typing import Type
 
@@ -38,7 +38,7 @@ def get_structured_llm(
     # Загружаем переменные окружения
     load_dotenv()
 
-    # api_base = os.getenv("OPENAI_API_BASE")
+    api_base = os.getenv("OPENAI_API_BASE")
     api_key = os.getenv("OPENAI_API_KEY")
     model_name = os.getenv("OPENAI_MODEL_NAME")
 
@@ -49,10 +49,15 @@ def get_structured_llm(
     llm = ChatOpenAI(
         model=model_name,
         api_key=api_key,
-        # base_url=api_base,
+        base_url=api_base,
         temperature=temperature,
         # timeout=60,
     )
+    # llm = ChatMistralAI(
+    #     model_name = model_name,
+    #     api_key = api_key,
+    #     temperature = temperature
+    # )
     print(f"Температура: {temperature}")
 
     return llm.with_structured_output(pydantic_model)  # Добавляем pydantic модель к llm (запросу)
