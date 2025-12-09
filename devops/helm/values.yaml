@@ -4,27 +4,19 @@ image:
     tag: latest
     pullPolicy: Always
 
-core-api:
-  image:
+  coreApi:
     repository: docker.io/erofeevdma/aith-team1-core-api
     tag: b6453281e7413f3e35e8c7059130b503b763168e
     pullPolicy: Always
-  replicaCount: 1
-  configMap:
-    name: ""  # Будет использовано имя из основного чарта
-  secret:
-    name: "hr-assist-secrets"  # Соответствует existingSecretName из основного чарта
 
-frontend:
-  image:
+  frontend:
     repository: docker.io/erofeevdma/aith-team1-frontend
     tag: b6453281e7413f3e35e8c7059130b503b763168e
     pullPolicy: Always
-  replicaCount: 1
-  configMap:
-    name: ""  # Будет использовано имя из основного чарта
-  secret:
-    name: "hr-assist-secrets"  # Соответствует existingSecretName из основного чарта
+
+replicaCount:
+  coreApi: 1
+  frontend: 1
 
 rabbitmq:
   image: rabbitmq:3.13-management-alpine
@@ -53,7 +45,7 @@ env:
   logLevel: INFO
 
 secrets:
-  useExternal: false
+  useExternal: f  
   useExisting: true
   existingSecretName: "hr-assist-secrets"
   
