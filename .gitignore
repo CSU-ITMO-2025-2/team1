@@ -20,6 +20,8 @@ __pycache__/
 *.pyo
 *.pyd
 *.log
+
+*.tgz
 .mypy_cache/
 .pytest_cache/
 .venv/
