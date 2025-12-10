@@ -1,0 +1,12 @@
+dependencies:
+- name: job-description-service
+  repository: file://./charts/job-description-service
+  version: 0.1.0
+- name: question-generation-service
+  repository: file://./charts/question-generation-service
+  version: 0.1.0
+- name: resume-evaluation-service
+  repository: file://./charts/resume-evaluation-service
+  version: 0.1.0
+digest: sha256:f5e1b6c94eaab2d8b66650447a1b16ff02f497928ec65df93416c91b5dbdfdf6
+generated: "2025-12-08T18:12:25.3823586+07:00"

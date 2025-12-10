@@ -5,34 +5,18 @@ image:
     pullPolicy: Always
 
   coreApi:
-    repository: erofeevdma/aith-team1-core-api
-    tag: latest
+    repository: docker.io/erofeevdma/aith-team1-core-api
+    tag: b6453281e7413f3e35e8c7059130b503b763168e
     pullPolicy: Always
 
   frontend:
-    repository: erofeevdma/aith-team1-frontend
-    tag: latest
-    pullPolicy: Always
-
-  resumeWorker:
-    repository: erofeevdma/aith-team1-resume-evaluation-service
-    tag: latest
-    pullPolicy: Always
-
-  jobDescrWorker:
-    repository: erofeevdma/aith-team1-job-description-service
-    tag: latest
-    pullPolicy: Always
-
-  questionWorker:
-    repository: erofeevdma/aith-team1-question-generation-service
-    tag: latest
+    repository: docker.io/erofeevdma/aith-team1-frontend
+    tag: b6453281e7413f3e35e8c7059130b503b763168e
     pullPolicy: Always
 
 replicaCount:
   coreApi: 1
   frontend: 1
-  workers: 1
 
 rabbitmq:
   image: rabbitmq:3.13-management-alpine
@@ -61,9 +45,14 @@ env:
   logLevel: INFO
 
 secrets:
-  useExternal: true # используем Vault
-  useExisting: false
+  useExternal: false # используем Vault
+  useExisting: true # true для тестов
   existingSecretName: "hr-assist-secrets"
+  
+  vault:
+    path: "team1/hr-assist"
+    username: ""
+  
   openaiApiKey: ""
   kcClientSecret: ""
   rabbitmqPassword: ""
@@ -72,4 +61,37 @@ secrets:
 
 # RBAC Configuration
 rbac:
-  enabled: true  # Set to true to enable RBAC-based secret isolation
+  enabled: false  # Set to true to enable RBAC-based secret isolation
+
+job-description-service:
+  image:
+    repository: docker.io/erofeevdma/aith-team1-job-description-worker
+    tag: b6453281e7413f3e35e8c7059130b503b763168e
+    pullPolicy: Always
+  replicaCount: 1
+  configMap:
+    name: ""
+  secret:
+    name: "hr-assist-secrets"
+
+question-generation-service:
+  image:
+    repository: docker.io/erofeevdma/aith-team1-question-generation-worker
+    tag: b6453281e7413f3e35e8c7059130b503b763168e
+    pullPolicy: Always
+  replicaCount: 1
+  configMap:
+    name: ""
+  secret:
+    name: "hr-assist-secrets"
+
+resume-evaluation-service:
+  image:
+    repository: docker.io/erofeevdma/aith-team1-resume-evaluation-worker
+    tag: b6453281e7413f3e35e8c7059130b503b763168e
+    pullPolicy: Always
+  replicaCount: 1
+  configMap:
+    name: ""
+  secret:
+    name: "hr-assist-secrets"
