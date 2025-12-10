@@ -2,33 +2,38 @@ global:
   configMapName: ""  # Будет использовано значение по умолчанию {{ .Release.Name }}-config
   secretName: "hr-assist-secrets"  # Имя существующего secret. Если пусто, будет использовано значение по умолчанию {{ .Release.Name }}-secrets
 
+# Replica counts for deployments
+replicaCount:
+  coreApi: 1
+  frontend: 1
+  workers: 1
+
+# Image configurations
 image:
   authService:
     repository: erofeevdma/aith-team1-auth-service
     tag: latest
     pullPolicy: Always
-
-core-api:
-  image:
+  coreApi:
     repository: docker.io/erofeevdma/aith-team1-core-api
     tag: b6453281e7413f3e35e8c7059130b503b763168e
     pullPolicy: Always
-  replicaCount: 1
-  configMap:
-    name: ""  # Будет использовано global.configMapName или значение по умолчанию {{ .Release.Name }}-config
-  secret:
-    name: ""  # Будет использовано global.secretName или значение по умолчанию {{ .Release.Name }}-secrets
-
-frontend:
-  image:
+  frontend:
     repository: docker.io/erofeevdma/aith-team1-frontend
     tag: b6453281e7413f3e35e8c7059130b503b763168e
     pullPolicy: Always
-  replicaCount: 1
-  configMap:
-    name: ""  # Будет использовано global.configMapName или значение по умолчанию {{ .Release.Name }}-config
-  secret:
-    name: ""  # Будет использовано global.secretName или значение по умолчанию {{ .Release.Name }}-secrets
+  resumeWorker:
+    repository: docker.io/erofeevdma/aith-team1-resume-evaluation-worker
+    tag: b6453281e7413f3e35e8c7059130b503b763168e
+    pullPolicy: Always
+  jobDescrWorker:
+    repository: docker.io/erofeevdma/aith-team1-job-description-worker
+    tag: b6453281e7413f3e35e8c7059130b503b763168e
+    pullPolicy: Always
+  questionWorker:
+    repository: docker.io/erofeevdma/aith-team1-question-generation-worker
+    tag: b6453281e7413f3e35e8c7059130b503b763168e
+    pullPolicy: Always
 
 rabbitmq:
   image: rabbitmq:3.13-management-alpine
@@ -57,8 +62,8 @@ env:
   logLevel: INFO
 
 secrets:
-  useExternal: f  
-  useExisting: true
+  useExternal: false # используем Vault
+  useExisting: true # true для тестов
   existingSecretName: "hr-assist-secrets"
   
   vault:
@@ -69,36 +74,9 @@ secrets:
   kcClientSecret: ""
   rabbitmqPassword: ""
   postgresPassword: ""
+# временно пока не разобрались с external secrets
 
-job-description-service:
-  image:
-    repository: docker.io/erofeevdma/aith-team1-job-description-worker
-    tag: b6453281e7413f3e35e8c7059130b503b763168e
-    pullPolicy: Always
-  replicaCount: 1
-  configMap:
-    name: ""
-  secret:
-    name: "hr-assist-secrets"
+# RBAC Configuration
+rbac:
+  enabled: false  # Set to true to enable RBAC-based secret isolation
 
-question-generation-service:
-  image:
-    repository: docker.io/erofeevdma/aith-team1-question-generation-worker
-    tag: b6453281e7413f3e35e8c7059130b503b763168e
-    pullPolicy: Always
-  replicaCount: 1
-  configMap:
-    name: ""
-  secret:
-    name: "hr-assist-secrets"
-
-resume-evaluation-service:
-  image:
-    repository: docker.io/erofeevdma/aith-team1-resume-evaluation-worker
-    tag: b6453281e7413f3e35e8c7059130b503b763168e
-    pullPolicy: Always
-  replicaCount: 1
-  configMap:
-    name: ""
-  secret:
-    name: "hr-assist-secrets"
