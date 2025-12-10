@@ -23,5 +23,10 @@ service:
   port: 8501
   targetPort: 8501
 
+# RBAC Configuration
+rbac:
+  enabled: false  # Set to true to enable RBAC-based secret isolation
+
+
 
 

@@ -19,3 +19,7 @@ configMap:
 secret:
   name: ""  # Будет переопределено из родительского чарта
 
+# RBAC Configuration
+rbac:
+  enabled: false  # Set to true to enable RBAC-based secret isolation
+

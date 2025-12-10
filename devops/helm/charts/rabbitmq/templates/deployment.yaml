@@ -1,0 +1,40 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-rabbitmq
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      {{- if or .Values.rbac.enabled (and .Values.global.rbac .Values.global.rbac.enabled) }}
+      serviceAccountName: {{ .Release.Name }}-rabbitmq-sa
+      {{- end }}
+      containers:
+        - name: rabbitmq
+          image: "{{ .Values.image }}"
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              value: {{ .Values.username | quote }}
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{- if or .Values.rbac.enabled (and .Values.global.rbac .Values.global.rbac.enabled) }}{{ .Release.Name }}-rabbitmq-secrets{{- else }}{{ .Values.secret.name | default .Values.global.secretName | default (printf "%s-secrets" .Release.Name) }}{{- end }}
+                  key: RABBITMQ_DEFAULT_PASS
+            - name: RABBITMQ_DEFAULT_VHOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.configMap.name | default .Values.global.configMapName | default (printf "%s-config" .Release.Name) }}
+                  key: RABBITMQ_DEFAULT_VHOST
+          ports:
+            - containerPort: {{ .Values.port }}
+            - containerPort: {{ .Values.uiPort }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+

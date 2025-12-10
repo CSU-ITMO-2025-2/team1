@@ -1,7 +1,8 @@
-image:
-  repository: erofeevdma/aith-team1-resume-evaluation-service
-  tag: latest
-  pullPolicy: Always
+image: rabbitmq:3.13-management-alpine
+username: guest
+vhost: "/"
+port: 5672
+uiPort: 15672
 
 replicaCount: 1
 

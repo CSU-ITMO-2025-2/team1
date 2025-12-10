@@ -23,5 +23,10 @@ service:
   port: 8000
   targetPort: 8000
 
+# RBAC Configuration
+rbac:
+  enabled: false  # Set to true to enable RBAC-based secret isolation
+
+
 
 

@@ -13,6 +13,9 @@ spec:
       labels:
         app: frontend
     spec:
+      {{- if or .Values.rbac.enabled (and .Values.global.rbac .Values.global.rbac.enabled) }}
+      serviceAccountName: {{ .Release.Name }}-frontend-sa
+      {{- end }}
       containers:
         - name: frontend
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -23,7 +26,7 @@ spec:
             - configMapRef:
                 name: {{ .Values.configMap.name | default .Values.global.configMapName | default (printf "%s-config" .Release.Name) }}
             - secretRef:
-                name: {{ .Values.secret.name | default .Values.global.secretName | default (printf "%s-secrets" .Release.Name) }}
+                name: {{- if or .Values.rbac.enabled (and .Values.global.rbac .Values.global.rbac.enabled) }}{{ .Release.Name }}-frontend-secrets{{- else }}{{ .Values.secret.name | default .Values.global.secretName | default (printf "%s-secrets" .Release.Name) }}{{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
 
