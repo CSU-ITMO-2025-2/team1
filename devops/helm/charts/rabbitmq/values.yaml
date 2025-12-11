@@ -24,3 +24,4 @@ secret:
 rbac:
   enabled: false  # Set to true to enable RBAC-based secret isolation
 
+
