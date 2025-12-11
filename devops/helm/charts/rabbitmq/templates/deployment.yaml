@@ -1,4 +1,10 @@
 ---
+{{- $secretName := "" }}
+{{- if or .Values.rbac.enabled (and .Values.global.rbac .Values.global.rbac.enabled) }}
+{{- $secretName = printf "%s-rabbitmq-secrets" .Release.Name }}
+{{- else }}
+{{- $secretName = .Values.secret.name | default .Values.global.secretName | default (printf "%s-secrets" .Release.Name) }}
+{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -25,7 +31,7 @@ spec:
             - name: RABBITMQ_DEFAULT_PASS
               valueFrom:
                 secretKeyRef:
-                  name: {{- if or .Values.rbac.enabled (and .Values.global.rbac .Values.global.rbac.enabled) }}{{ .Release.Name }}-rabbitmq-secrets{{- else }}{{ .Values.secret.name | default .Values.global.secretName | default (printf "%s-secrets" .Release.Name) }}{{- end }}
+                  name: {{ $secretName }}
                   key: RABBITMQ_DEFAULT_PASS
             - name: RABBITMQ_DEFAULT_VHOST
               valueFrom:

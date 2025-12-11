@@ -1,4 +1,10 @@
 ---
+{{- $secretName := "" }}
+{{- if or .Values.rbac.enabled (and .Values.global.rbac .Values.global.rbac.enabled) }}
+{{- $secretName = printf "%s-frontend-secrets" .Release.Name }}
+{{- else }}
+{{- $secretName = .Values.secret.name | default .Values.global.secretName | default (printf "%s-secrets" .Release.Name) }}
+{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -26,7 +32,7 @@ spec:
             - configMapRef:
                 name: {{ .Values.configMap.name | default .Values.global.configMapName | default (printf "%s-config" .Release.Name) }}
             - secretRef:
-                name: {{- if or .Values.rbac.enabled (and .Values.global.rbac .Values.global.rbac.enabled) }}{{ .Release.Name }}-frontend-secrets{{- else }}{{ .Values.secret.name | default .Values.global.secretName | default (printf "%s-secrets" .Release.Name) }}{{- end }}
+                name: {{ $secretName }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
 
