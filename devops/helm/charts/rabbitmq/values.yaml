@@ -1,0 +1,27 @@
+image: rabbitmq:3.13-management-alpine
+username: guest
+vhost: "/"
+port: 5672
+uiPort: 15672
+
+replicaCount: 1
+
+resources:
+  requests:
+    cpu: "200m"
+    memory: "512Mi"
+  limits:
+    cpu: "200m"
+    memory: "512Mi"
+
+configMap:
+  name: ""  # Будет переопределено из родительского чарта
+
+secret:
+  name: ""  # Будет переопределено из родительского чарта
+
+# RBAC Configuration
+rbac:
+  enabled: false  # Set to true to enable RBAC-based secret isolation
+
+

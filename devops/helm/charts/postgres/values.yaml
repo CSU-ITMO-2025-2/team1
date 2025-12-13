@@ -1,0 +1,23 @@
+image: postgres:16
+username: postgres
+db: hr_assist
+port: 5432
+
+replicaCount: 1
+
+resources:
+  requests:
+    cpu: "200m"
+    memory: "512Mi"
+  limits:
+    cpu: "200m"
+    memory: "512Mi"
+
+secret:
+  name: ""  # Будет переопределено из родительского чарта
+
+# RBAC Configuration
+rbac:
+  enabled: false  # Set to true to enable RBAC-based secret isolation
+
+

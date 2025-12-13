@@ -6,6 +6,12 @@ version: 0.1.0
 appVersion: "0.1.0"
 
 dependencies:
+  - name: core-api
+    version: 0.1.0
+    repository: "file://./charts/core-api"
+  - name: frontend
+    version: 0.1.0
+    repository: "file://./charts/frontend"
   - name: job-description-service
     version: 0.1.0
     repository: "file://./charts/job-description-service"
@@ -15,3 +21,9 @@ dependencies:
   - name: resume-evaluation-service
     version: 0.1.0
     repository: "file://./charts/resume-evaluation-service"
+  - name: postgres
+    version: 0.1.0
+    repository: "file://./charts/postgres"
+  - name: rabbitmq
+    version: 0.1.0
+    repository: "file://./charts/rabbitmq"

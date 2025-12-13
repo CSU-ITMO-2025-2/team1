@@ -28,3 +28,6 @@ autoscaling:
   queueLength: 10  # Scale 1 replica per 10 messages
   rabbitmqHost: ""  # Will be set from parent chart
 
+# RBAC Configuration
+rbac:
+  enabled: false  # Set to true to enable RBAC-based secret isolation
