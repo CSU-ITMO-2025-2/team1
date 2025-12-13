@@ -1,6 +1,6 @@
 global:
   configMapName: ""  # Будет использовано значение по умолчанию {{ .Release.Name }}-config
-  secretName: "hr-assist-secrets"  # Имя существующего secret. Если пусто, будет использовано значение по умолчанию {{ .Release.Name }}-secrets
+  secretName: "team-1-secrets"  # Имя существующего secret. Если пусто, будет использовано значение по умолчанию {{ .Release.Name }}-secrets
   rbac:
     enabled: false  # Set to true to enable RBAC-based secret isolation (can be overridden in subcharts)
 
