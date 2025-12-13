@@ -16,11 +16,13 @@ spec:
         userPass:
           path: "userpass"
           username:
-            name: vault-credentials
-            key: username
+            secretRef:
+              name: vault-credentials
+              key: username
           password:
-            name: vault-credentials
-            key: password
+            secretRef:
+              name: vault-credentials
+              key: password
 
 ---
 # PostgreSQL Secrets ONLY
