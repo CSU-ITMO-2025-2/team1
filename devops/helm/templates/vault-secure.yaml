@@ -15,10 +15,7 @@ spec:
       auth:
         userPass:
           path: "userpass"
-          username:
-            secretRef:
-              name: vault-credentials
-              key: username
+          username: {{ .Values.secrets.vault.username | default "" | quote }}
           password:
             secretRef:
               name: vault-credentials
