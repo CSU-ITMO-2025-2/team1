@@ -64,13 +64,16 @@ env:
   logLevel: INFO
 
 secrets:
-  useExternal: false # используем Vault
-  useExisting: true # true для тестов
+  useExternal: True # используем Vault
+  useExisting: False # true для тестов
   existingSecretName: "hr-assist-secrets"
   
   vault:
-    path: "team1/hr-assist"
-    username: ""
+    server: "https://vault.kubepractice.ru"  # URL внешнего Vault
+    mountPath: "secret"  # Mount path для KV секретов (secret или kv)
+    path: "team1/hr-assist"  # Путь к секретам в Vault
+    username: ""  # Имя пользователя для аутентификации в Vault
+    password: ""  # Пароль для аутентификации в Vault
   
   openaiApiKey: ""
   kcClientSecret: ""
