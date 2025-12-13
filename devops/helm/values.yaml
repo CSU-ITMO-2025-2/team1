@@ -64,12 +64,12 @@ resources:
 # Autoscaling configuration
 autoscaling:
   coreApi:
-    enabled: true
+    enabled: false # turn on
     minReplicas: 2
     maxReplicas: 5
     targetMemoryUtilization: 70  # Scale when memory >70%
   frontend:
-    enabled: true
+    enabled: false # turn on
     minReplicas: 2
     maxReplicas: 5
     targetMemoryUtilization: 70
@@ -131,7 +131,7 @@ job-description-service:
     name: "hr-assist-secrets"
   # KEDA autoscaling configuration (queue-based)
   autoscaling:
-    enabled: true
+    enabled: false # turn on
     minReplicaCount: 1
     maxReplicaCount: 5
     queueName: "job_description_queue"
@@ -150,7 +150,7 @@ question-generation-service:
     name: "hr-assist-secrets"
   # KEDA autoscaling configuration (queue-based)
   autoscaling:
-    enabled: true
+    enabled: false  # turn on
     minReplicaCount: 1
     maxReplicaCount: 5
     queueName: "question_generation_queue"
@@ -169,7 +169,7 @@ resume-evaluation-service:
     name: "hr-assist-secrets"
   # KEDA autoscaling configuration (queue-based)
   autoscaling:
-    enabled: true
+    enabled: false  # turn on
     minReplicaCount: 1
     maxReplicaCount: 5
     queueName: "resume_evaluation_queue"
