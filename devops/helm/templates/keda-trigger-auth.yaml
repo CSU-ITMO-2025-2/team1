@@ -1,5 +1,4 @@
-{{- if or .Values.job-description-service.autoscaling.enabled .Values.resume-evaluation-service.autoscaling.enabled .Values.question-generation-service.autoscaling.enabled }}
----
+{{- if or .Values.job-description-service.autoscaling.enabled .Values.resume-evaluation-service.autoscaling.enabled .Values.question-generation-service.autoscaling.enabled -}}
 # TriggerAuthentication for KEDA to access RabbitMQ
 # This allows KEDA ScaledObjects to authenticate to RabbitMQ
 apiVersion: keda.sh/v1alpha1
