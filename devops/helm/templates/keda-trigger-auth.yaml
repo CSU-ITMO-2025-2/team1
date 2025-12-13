@@ -1,0 +1,21 @@
+---
+# TriggerAuthentication for KEDA to access RabbitMQ
+# This allows KEDA ScaledObjects to authenticate to RabbitMQ
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: {{ .Release.Name }}-rabbitmq-trigger-auth
+  namespace: {{ .Release.Namespace }}
+spec:
+  secretTargetRef:
+  {{- if .Values.rbac.enabled }}
+    # RBAC mode: use workers-specific secret
+    - parameter: host
+      name: {{ .Release.Name }}-workers-secrets
+      key: RABBITMQ_HOST
+  {{- else }}
+    # Non-RBAC mode: use shared secret
+    - parameter: host
+      name: {{ .Values.secrets.existingSecretName | default (printf "%s-secrets" .Release.Name) }}
+      key: RABBITMQ_HOST
+  {{- end }}

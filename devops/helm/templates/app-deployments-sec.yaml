@@ -29,11 +29,11 @@ spec:
                 name: {{ .Release.Name }}-core-api-secrets
           resources:
             requests:
-              cpu: "300m"
-              memory: "512Mi"
+              cpu: {{ .Values.resources.coreApi.requests.cpu | quote }}
+              memory: {{ .Values.resources.coreApi.requests.memory | quote }}
             limits:
-              cpu: "300m"
-              memory: "512Mi"
+              cpu: {{ .Values.resources.coreApi.limits.cpu | quote }}
+              memory: {{ .Values.resources.coreApi.limits.memory | quote }}
 
 ---
 # Resume Evaluation Worker with RBAC and isolated secrets
@@ -167,9 +167,9 @@ spec:
                 name: {{ .Release.Name }}-frontend-secrets
           resources:
             requests:
-              cpu: "100m"
-              memory: "256Mi"
+              cpu: {{ .Values.resources.frontend.requests.cpu | quote }}
+              memory: {{ .Values.resources.frontend.requests.memory | quote }}
             limits:
-              cpu: "100m"
-              memory: "256Mi"
+              cpu: {{ .Values.resources.frontend.limits.cpu | quote }}
+              memory: {{ .Values.resources.frontend.limits.memory | quote }}
 {{- end }}

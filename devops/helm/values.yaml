@@ -15,8 +15,41 @@ image:
     pullPolicy: Always
 
 replicaCount:
-  coreApi: 1
-  frontend: 1
+  coreApi: 2  # Increased for HA (HPA will manage scaling)
+  frontend: 2  # Increased for HA (HPA will manage scaling)
+
+# Resource requests/limits based on actual usage metrics
+# IMPORTANT: Current values are from IDLE state (no load)
+# Actual idle usage: Core API (2m CPU, 81Mi RAM), Frontend (1m CPU, 200Mi RAM)
+# TODO: Adjust after load testing or monitoring production traffic
+resources:
+  coreApi:
+    requests:
+      cpu: "100m"      # Conservative: allows 50x growth from idle
+      memory: "256Mi"  # Conservative: allows 3x growth (recommend monitoring)
+    limits:
+      cpu: "500m"      # Allow bursts during high load
+      memory: "512Mi"  # Original limit maintained
+  frontend:
+    requests:
+      cpu: "50m"       # Conservative: Streamlit can be heavier under load
+      memory: "256Mi"  # Already using 200Mi idle, needs headroom
+    limits:
+      cpu: "200m"      # Allow bursts
+      memory: "512Mi"  # Higher limit for peak usage
+
+# Autoscaling configuration
+autoscaling:
+  coreApi:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetMemoryUtilization: 70  # Scale when memory >70%
+  frontend:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetMemoryUtilization: 70
 
 rabbitmq:
   image: rabbitmq:3.13-management-alpine
@@ -73,6 +106,14 @@ job-description-service:
     name: ""
   secret:
     name: "hr-assist-secrets"
+  # KEDA autoscaling configuration (queue-based)
+  autoscaling:
+    enabled: true
+    minReplicaCount: 1
+    maxReplicaCount: 5
+    queueName: "job_description_queue"
+    queueLength: 10  # Scale 1 replica per 10 messages in queue
+    rabbitmqHost: ""  # Will use RabbitMQ service name from parent chart
 
 question-generation-service:
   image:
@@ -84,6 +125,14 @@ question-generation-service:
     name: ""
   secret:
     name: "hr-assist-secrets"
+  # KEDA autoscaling configuration (queue-based)
+  autoscaling:
+    enabled: true
+    minReplicaCount: 1
+    maxReplicaCount: 5
+    queueName: "question_generation_queue"
+    queueLength: 10  # Scale 1 replica per 10 messages in queue
+    rabbitmqHost: ""  # Will use RabbitMQ service name from parent chart
 
 resume-evaluation-service:
   image:
@@ -95,3 +144,11 @@ resume-evaluation-service:
     name: ""
   secret:
     name: "hr-assist-secrets"
+  # KEDA autoscaling configuration (queue-based)
+  autoscaling:
+    enabled: true
+    minReplicaCount: 1
+    maxReplicaCount: 5
+    queueName: "resume_evaluation_queue"
+    queueLength: 10  # Scale 1 replica per 10 messages in queue
+    rabbitmqHost: ""  # Will use RabbitMQ service name from parent chart
