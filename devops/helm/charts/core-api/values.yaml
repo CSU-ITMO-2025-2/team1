@@ -1,16 +1,16 @@
 image:
-  repository: erofeevdma/aith-team1-resume-evaluation-service
-  tag: latest
+  repository: docker.io/erofeevdma/aith-team1-core-api
+  tag: b6453281e7413f3e35e8c7059130b503b763168e
   pullPolicy: Always
 
 replicaCount: 1
 
 resources:
   requests:
-    cpu: "200m"
+    cpu: "300m"
     memory: "512Mi"
   limits:
-    cpu: "200m"
+    cpu: "300m"
     memory: "512Mi"
 
 configMap:
@@ -19,7 +19,14 @@ configMap:
 secret:
   name: ""  # Будет переопределено из родительского чарта
 
+service:
+  port: 8000
+  targetPort: 8000
+
 # RBAC Configuration
 rbac:
   enabled: false  # Set to true to enable RBAC-based secret isolation
+
+
+
 

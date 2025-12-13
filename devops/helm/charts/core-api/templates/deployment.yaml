@@ -1,34 +1,36 @@
 ---
 {{- $secretName := "" }}
 {{- if or .Values.rbac.enabled (and .Values.global.rbac .Values.global.rbac.enabled) }}
-{{- $secretName = printf "%s-workers-secrets" .Release.Name }}
+{{- $secretName = printf "%s-core-api-secrets" .Release.Name }}
 {{- else }}
-{{- $secretName = .Values.secret.name | default (printf "%s-secrets" .Release.Name) }}
+{{- $secretName = .Values.secret.name | default .Values.global.secretName | default (printf "%s-secrets" .Release.Name) }}
 {{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-question-worker
+  name: {{ .Release.Name }}-core-api
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: question-worker
+      app: core-api
   template:
     metadata:
       labels:
-        app: question-worker
+        app: core-api
     spec:
       {{- if or .Values.rbac.enabled (and .Values.global.rbac .Values.global.rbac.enabled) }}
-      serviceAccountName: {{ .Release.Name }}-workers-sa
+      serviceAccountName: {{ .Release.Name }}-core-api-sa
       {{- end }}
       containers:
-        - name: question-worker
+        - name: core-api
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.targetPort | default 8000 }}
           envFrom:
             - configMapRef:
-                name: {{ .Values.configMap.name | default (printf "%s-config" .Release.Name) }}
+                name: {{ .Values.configMap.name | default .Values.global.configMapName | default (printf "%s-config" .Release.Name) }}
             - secretRef:
                 name: {{ $secretName }}
           resources:
