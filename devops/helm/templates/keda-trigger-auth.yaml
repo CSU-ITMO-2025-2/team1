@@ -1,3 +1,4 @@
+{{- if or .Values.job-description-service.autoscaling.enabled .Values.resume-evaluation-service.autoscaling.enabled .Values.question-generation-service.autoscaling.enabled }}
 ---
 # TriggerAuthentication for KEDA to access RabbitMQ
 # This allows KEDA ScaledObjects to authenticate to RabbitMQ
@@ -19,3 +20,4 @@ spec:
       name: {{ .Values.secrets.existingSecretName | default (printf "%s-secrets" .Release.Name) }}
       key: RABBITMQ_HOST
   {{- end }}
+{{- end }}
