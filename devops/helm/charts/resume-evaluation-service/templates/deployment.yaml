@@ -3,7 +3,7 @@
 {{- if or .Values.rbac.enabled (and .Values.global.rbac .Values.global.rbac.enabled) }}
 {{- $secretName = printf "%s-workers-secrets" .Release.Name }}
 {{- else }}
-{{- $secretName = .Values.secret.name | default (printf "%s-secrets" .Release.Name) }}
+{{- $secretName = .Values.secret.name | default .Values.global.secretName | default (printf "%s-secrets" .Release.Name) }}
 {{- end }}
 apiVersion: apps/v1
 kind: Deployment

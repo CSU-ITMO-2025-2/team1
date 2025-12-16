@@ -7,11 +7,11 @@ replicaCount: 1
 
 resources:
   requests:
-    cpu: "200m"
-    memory: "512Mi"
+    cpu: "10m"       # Workers are I/O-bound (idle: 1m CPU, conservative: 10x)
+    memory: "150Mi"  # Idle usage: ~100Mi, allows 50% growth
   limits:
-    cpu: "200m"
-    memory: "512Mi"
+    cpu: "200m"      # Allow bursts for API calls
+    memory: "300Mi"  # 3x actual usage for safety
 
 configMap:
   name: ""  # Будет переопределено из родительского чарта
@@ -19,7 +19,15 @@ configMap:
 secret:
   name: ""  # Будет переопределено из родительского чарта
 
+# KEDA autoscaling configuration
+autoscaling:
+  enabled: true
+  minReplicaCount: 1
+  maxReplicaCount: 5
+  queueName: "job_description_queue"
+  queueLength: 10  # Scale 1 replica per 10 messages
+  rabbitmqHost: ""  # Will be set from parent chart
+
 # RBAC Configuration
 rbac:
   enabled: false  # Set to true to enable RBAC-based secret isolation
-
