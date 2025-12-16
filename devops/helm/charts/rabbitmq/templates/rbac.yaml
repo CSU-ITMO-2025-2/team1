@@ -1,6 +1,5 @@
 {{- if or .Values.rbac.enabled (and .Values.global.rbac .Values.global.rbac.enabled) }}
 ---
-# Role: RabbitMQ can only read its own secret
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:

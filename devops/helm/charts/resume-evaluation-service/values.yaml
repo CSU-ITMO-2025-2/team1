@@ -3,32 +3,30 @@ image:
   tag: latest
   pullPolicy: Always
 
-replicaCount: 1
+replicaCount: 3
 
 resources:
   requests:
-    cpu: "10m"       # Workers are I/O-bound (idle: 1m CPU, conservative: 10x)
-    memory: "150Mi"  # Idle usage: ~100Mi, allows 50% growth
+    cpu: "10m"
+    memory: "150Mi"
   limits:
-    cpu: "200m"      # Allow bursts for API calls
-    memory: "300Mi"  # 3x actual usage for safety
+    cpu: "200m"
+    memory: "300Mi"
 
 configMap:
-  name: ""  # Будет переопределено из родительского чарта
+  name: ""
 
 secret:
-  name: ""  # Будет переопределено из родительского чарта
+  name: ""
 
-# RBAC Configuration
 rbac:
-  enabled: false  # Set to true to enable RBAC-based secret isolation
+  enabled: false
 
-# KEDA autoscaling configuration
 autoscaling:
   enabled: true
   minReplicaCount: 1
   maxReplicaCount: 5
   queueName: "resume_evaluation_queue"
-  queueLength: 10  # Scale 1 replica per 10 messages
-  rabbitmqHost: ""  # Will be set from parent chart
+  queueLength: 10
+  rabbitmqHost: ""
 

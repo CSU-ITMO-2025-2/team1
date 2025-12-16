@@ -1,6 +1,5 @@
 {{- if or .Values.rbac.enabled (and .Values.global.rbac .Values.global.rbac.enabled) }}
 ---
-# Role: Core API can read its secrets
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
