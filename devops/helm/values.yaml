@@ -82,3 +82,5 @@ secrets:
 rbac:
   enabled: false  # Set to true to enable RBAC-based secret isolation
 
+networkPolicy:
+  enabled: true

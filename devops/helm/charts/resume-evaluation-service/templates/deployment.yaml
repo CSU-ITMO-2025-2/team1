@@ -18,6 +18,7 @@ spec:
     metadata:
       labels:
         app: resume-worker
+        egress: openai-via-squid
     spec:
       {{- if or .Values.rbac.enabled (and .Values.global.rbac .Values.global.rbac.enabled) }}
       serviceAccountName: {{ .Release.Name }}-workers-sa
@@ -30,7 +31,7 @@ spec:
             - configMapRef:
                 name: {{ .Values.configMap.name | default (printf "%s-config" .Release.Name) }}
             - secretRef:
-                name: {{ $secretName }}
+              name: {{ printf "%s-secrets" .Release.Name | quote }}-secrets
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
 
