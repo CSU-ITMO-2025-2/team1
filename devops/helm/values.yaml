@@ -178,3 +178,6 @@ resume-evaluation-service:
     queueName: "resume_evaluation_queue"
     queueLength: 10  # Scale 1 replica per 10 messages in queue
     rabbitmqHost: ""  # Will use RabbitMQ service name from parent chart
+
+networkPolicy:
+  enabled: true  
