@@ -9,10 +9,13 @@ spec:
   ports:
     - name: amqp
       port: {{ .Values.port }}
-      targetPort: {{ .Values.port }}
-    - name: ui
+      targetPort: amqp
+    - name: management
       port: {{ .Values.uiPort }}
-      targetPort: {{ .Values.uiPort }}
+      targetPort: management
+    - name: prometheus
+      port: 15692
+      targetPort: prometheus
 
 
 
