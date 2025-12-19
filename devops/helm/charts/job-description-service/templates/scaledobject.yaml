@@ -13,17 +13,11 @@ spec:
   pollingInterval: 30
   cooldownPeriod: 300
   triggers:
-  - type: rabbitmq
+  - type: prometheus
     metadata:
-      queueName: {{ .Values.autoscaling.queueName }}
-      mode: QueueLength
-      value: {{ .Values.autoscaling.queueLength | quote }}
-      protocol: auto
-      {{- if .Values.autoscaling.rabbitmqHost }}
-      host: {{ .Values.autoscaling.rabbitmqHost }}
-      {{- else }}
-      hostFromEnv: RABBITMQ_HOST
-      {{- end }}
-    authenticationRef:
-      name: {{ .Release.Name }}-rabbitmq-trigger-auth
+      serverAddress: http://{{ .Release.Name }}-rabbitmq.{{ .Release.Namespace }}.svc.cluster.local:15692
+      metricName: rabbitmq_queue_messages_ready
+      query: |
+        rabbitmq_queue_messages_ready{queue="{{ .Values.autoscaling.queueName }}"}
+      threshold: {{ .Values.autoscaling.queueLength | quote }}
 {{- end }}

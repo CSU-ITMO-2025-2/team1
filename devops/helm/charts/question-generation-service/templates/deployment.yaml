@@ -18,6 +18,7 @@ spec:
     metadata:
       labels:
         app: question-worker
+        egress: openai-via-squid
     spec:
       {{- if or .Values.rbac.enabled (and .Values.global.rbac .Values.global.rbac.enabled) }}
       serviceAccountName: {{ .Release.Name }}-workers-sa
