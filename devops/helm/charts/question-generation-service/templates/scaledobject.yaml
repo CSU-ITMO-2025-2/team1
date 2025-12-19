@@ -10,8 +10,8 @@ spec:
     name: {{ .Release.Name }}-question-worker
   minReplicaCount: {{ .Values.autoscaling.minReplicaCount }}
   maxReplicaCount: {{ .Values.autoscaling.maxReplicaCount }}
-  pollingInterval: 30  # Check queue depth every 30 seconds
-  cooldownPeriod: 300  # Wait 5 minutes before scaling down
+  pollingInterval: 30
+  cooldownPeriod: 300
   triggers:
   - type: prometheus
     metadata:
