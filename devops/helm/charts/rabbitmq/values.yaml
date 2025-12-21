@@ -25,17 +25,21 @@ rbac:
 
 probes:
   liveness:
-    httpGet:
-      path: /api/healthchecks/node
-      port: 15672
+    exec:
+      command:
+        - /bin/sh
+        - -c
+        - "rabbitmq-diagnostics ping || exit 1"
     initialDelaySeconds: 60
     periodSeconds: 30
     timeoutSeconds: 10
     failureThreshold: 3
   readiness:
-    httpGet:
-      path: /api/healthchecks/node
-      port: 15672
+    exec:
+      command:
+        - /bin/sh
+        - -c
+        - "rabbitmq-diagnostics ping || exit 1"
     initialDelaySeconds: 30
     periodSeconds: 10
     timeoutSeconds: 5
