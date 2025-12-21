@@ -3,15 +3,15 @@ image:
   tag: latest
   pullPolicy: Always
 
-replicaCount: 3
+replicaCount: 2
 
 resources:
   requests:
     cpu: "10m"
     memory: "150Mi"
   limits:
-    cpu: "200m"
-    memory: "300Mi"
+    cpu: "100m"
+    memory: "200Mi"
 
 configMap:
   name: ""
