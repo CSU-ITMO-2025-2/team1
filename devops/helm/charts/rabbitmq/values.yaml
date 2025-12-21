@@ -30,9 +30,9 @@ probes:
         - /bin/sh
         - -c
         - "rabbitmq-diagnostics ping || exit 1"
-    initialDelaySeconds: 60
+    initialDelaySeconds: 90
     periodSeconds: 30
-    timeoutSeconds: 10
+    timeoutSeconds: 30
     failureThreshold: 3
   readiness:
     exec:
@@ -40,9 +40,9 @@ probes:
         - /bin/sh
         - -c
         - "rabbitmq-diagnostics ping || exit 1"
-    initialDelaySeconds: 30
+    initialDelaySeconds: 60
     periodSeconds: 10
-    timeoutSeconds: 5
+    timeoutSeconds: 15
     failureThreshold: 3
 
 
