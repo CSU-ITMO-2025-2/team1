@@ -52,6 +52,12 @@ spec:
               name: management
             - containerPort: 15692
               name: prometheus
+          {{- if .Values.probes }}
+          livenessProbe:
+            {{- toYaml .Values.probes.liveness | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.probes.readiness | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
 
