@@ -29,3 +29,25 @@ autoscaling:
 
 rbac:
   enabled: false
+
+probes:
+  liveness:
+    exec:
+      command:
+        - /bin/sh
+        - -c
+        - "ps aux | grep -v grep | grep python"
+    initialDelaySeconds: 60
+    periodSeconds: 30
+    timeoutSeconds: 10
+    failureThreshold: 3
+  readiness:
+    exec:
+      command:
+        - /bin/sh
+        - -c
+        - "ps aux | grep -v grep | grep python"
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3

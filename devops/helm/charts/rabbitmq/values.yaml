@@ -23,4 +23,22 @@ secret:
 rbac:
   enabled: false
 
+probes:
+  liveness:
+    httpGet:
+      path: /api/healthchecks/node
+      port: 15672
+    initialDelaySeconds: 60
+    periodSeconds: 30
+    timeoutSeconds: 10
+    failureThreshold: 3
+  readiness:
+    httpGet:
+      path: /api/healthchecks/node
+      port: 15672
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
 
