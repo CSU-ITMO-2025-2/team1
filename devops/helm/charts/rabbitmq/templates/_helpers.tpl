@@ -78,3 +78,24 @@ Create the name of the config map to use
 {{- .Values.configMap.name | default .Values.global.configMapName | default (printf "%s-config" .Release.Name) }}
 {{- end }}
 
+{{/*
+Validate required values
+*/}}
+{{- define "rabbitmq.validateValues" -}}
+{{- if not .Values.image }}
+{{- fail "rabbitmq: image is required" }}
+{{- end }}
+{{- if not .Values.port }}
+{{- fail "rabbitmq: port is required" }}
+{{- end }}
+{{- if not .Values.uiPort }}
+{{- fail "rabbitmq: uiPort is required" }}
+{{- end }}
+{{- if not .Values.replicaCount }}
+{{- fail "rabbitmq: replicaCount is required" }}
+{{- end }}
+{{- if not .Values.resources }}
+{{- fail "rabbitmq: resources are required" }}
+{{- end }}
+{{- end }}
+

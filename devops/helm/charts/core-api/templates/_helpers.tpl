@@ -78,3 +78,24 @@ Create the name of the config map to use
 {{- .Values.configMap.name | default .Values.global.configMapName | default (printf "%s-config" .Release.Name) }}
 {{- end }}
 
+{{/*
+Validate required values
+*/}}
+{{- define "core-api.validateValues" -}}
+{{- if not .Values.image.repository }}
+{{- fail "core-api: image.repository is required" }}
+{{- end }}
+{{- if not .Values.image.tag }}
+{{- fail "core-api: image.tag is required" }}
+{{- end }}
+{{- if eq .Values.image.tag "latest" }}
+{{- printf "\nWARNING: core-api: Using 'latest' tag for image is not recommended for production\n" }}
+{{- end }}
+{{- if not .Values.replicaCount }}
+{{- fail "core-api: replicaCount is required" }}
+{{- end }}
+{{- if not .Values.resources }}
+{{- fail "core-api: resources are required" }}
+{{- end }}
+{{- end }}
+

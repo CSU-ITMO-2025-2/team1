@@ -85,3 +85,27 @@ Create the deployment name (short name for worker)
 {{- printf "%s-question-worker" .Release.Name }}
 {{- end }}
 
+{{/*
+Validate required values
+*/}}
+{{- define "question-generation-service.validateValues" -}}
+{{- if not .Values.image.repository }}
+{{- fail "question-generation-service: image.repository is required" }}
+{{- end }}
+{{- if not .Values.image.tag }}
+{{- fail "question-generation-service: image.tag is required" }}
+{{- end }}
+{{- if eq .Values.image.tag "latest" }}
+{{- printf "\nWARNING: question-generation-service: Using 'latest' tag for image is not recommended for production\n" }}
+{{- end }}
+{{- if not .Values.replicaCount }}
+{{- fail "question-generation-service: replicaCount is required" }}
+{{- end }}
+{{- if not .Values.resources }}
+{{- fail "question-generation-service: resources are required" }}
+{{- end }}
+{{- if and .Values.autoscaling.enabled (not .Values.autoscaling.queueName) }}
+{{- fail "question-generation-service: autoscaling.queueName is required when autoscaling is enabled" }}
+{{- end }}
+{{- end }}
+

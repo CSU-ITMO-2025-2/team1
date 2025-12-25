@@ -85,3 +85,27 @@ Create the deployment name (short name for worker)
 {{- printf "%s-job-descr-worker" .Release.Name }}
 {{- end }}
 
+{{/*
+Validate required values
+*/}}
+{{- define "job-description-service.validateValues" -}}
+{{- if not .Values.image.repository }}
+{{- fail "job-description-service: image.repository is required" }}
+{{- end }}
+{{- if not .Values.image.tag }}
+{{- fail "job-description-service: image.tag is required" }}
+{{- end }}
+{{- if eq .Values.image.tag "latest" }}
+{{- printf "\nWARNING: job-description-service: Using 'latest' tag for image is not recommended for production\n" }}
+{{- end }}
+{{- if not .Values.replicaCount }}
+{{- fail "job-description-service: replicaCount is required" }}
+{{- end }}
+{{- if not .Values.resources }}
+{{- fail "job-description-service: resources are required" }}
+{{- end }}
+{{- if and .Values.autoscaling.enabled (not .Values.autoscaling.queueName) }}
+{{- fail "job-description-service: autoscaling.queueName is required when autoscaling is enabled" }}
+{{- end }}
+{{- end }}
+

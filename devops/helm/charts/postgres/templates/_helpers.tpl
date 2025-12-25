@@ -78,3 +78,27 @@ Create the name of the config map to use
 {{- .Values.configMap.name | default .Values.global.configMapName | default (printf "%s-config" .Release.Name) }}
 {{- end }}
 
+{{/*
+Validate required values
+*/}}
+{{- define "postgres.validateValues" -}}
+{{- if not .Values.image }}
+{{- fail "postgres: image is required" }}
+{{- end }}
+{{- if not .Values.username }}
+{{- fail "postgres: username is required" }}
+{{- end }}
+{{- if not .Values.db }}
+{{- fail "postgres: db (database name) is required" }}
+{{- end }}
+{{- if not .Values.port }}
+{{- fail "postgres: port is required" }}
+{{- end }}
+{{- if not .Values.replicaCount }}
+{{- fail "postgres: replicaCount is required" }}
+{{- end }}
+{{- if not .Values.resources }}
+{{- fail "postgres: resources are required" }}
+{{- end }}
+{{- end }}
+

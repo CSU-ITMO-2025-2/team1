@@ -85,3 +85,27 @@ Create the deployment name (short name for worker)
 {{- printf "%s-resume-worker" .Release.Name }}
 {{- end }}
 
+{{/*
+Validate required values
+*/}}
+{{- define "resume-evaluation-service.validateValues" -}}
+{{- if not .Values.image.repository }}
+{{- fail "resume-evaluation-service: image.repository is required" }}
+{{- end }}
+{{- if not .Values.image.tag }}
+{{- fail "resume-evaluation-service: image.tag is required" }}
+{{- end }}
+{{- if eq .Values.image.tag "latest" }}
+{{- printf "\nWARNING: resume-evaluation-service: Using 'latest' tag for image is not recommended for production\n" }}
+{{- end }}
+{{- if not .Values.replicaCount }}
+{{- fail "resume-evaluation-service: replicaCount is required" }}
+{{- end }}
+{{- if not .Values.resources }}
+{{- fail "resume-evaluation-service: resources are required" }}
+{{- end }}
+{{- if and .Values.autoscaling.enabled (not .Values.autoscaling.queueName) }}
+{{- fail "resume-evaluation-service: autoscaling.queueName is required when autoscaling is enabled" }}
+{{- end }}
+{{- end }}
+
