@@ -10,6 +10,28 @@ jobs:
     runs-on: ubuntu-latest
     container: python:3.12-slim
     continue-on-error: true
+    env:
+      # PostgreSQL
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: test_db
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+      # RabbitMQ
+      RABBITMQ_DEFAULT_HOST: localhost
+      RABBITMQ_PORT: "5672"
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_VHOST: /
+      # OpenAI (mock для тестов)
+      OPENAI_API_KEY: sk-test-mock-key-for-ci
+      OPENAI_MODEL_NAME: gpt-4o-mini
+      OPENAI_API_BASE: https://api.openai.com/v1
+      # Core API
+      CORE_API_HOST: localhost
+      CORE_API_PORT: "8000"
+      # Logging
+      LOG_LEVEL: INFO
     steps:
       - name: Checkout
         uses: actions/checkout@v4
