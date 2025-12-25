@@ -1,27 +1,23 @@
 ---
-{{- $secretName := "" }}
-{{- if or .Values.rbac.enabled (and .Values.global.rbac .Values.global.rbac.enabled) }}
-{{- $secretName = printf "%s-workers-secrets" .Release.Name }}
-{{- else }}
-{{- $secretName = .Values.secret.name | default .Values.global.secretName | default (printf "%s-secrets" .Release.Name) }}
-{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-question-worker
+  name: {{ include "question-generation-service.deploymentName" . }}
+  labels:
+    {{- include "question-generation-service.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: question-worker
+      {{- include "question-generation-service.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: question-worker
+        {{- include "question-generation-service.selectorLabels" . | nindent 8 }}
         egress: openai-via-squid
     spec:
       {{- if or .Values.rbac.enabled (and .Values.global.rbac .Values.global.rbac.enabled) }}
-      serviceAccountName: {{ .Release.Name }}-workers-sa
+      serviceAccountName: {{ include "question-generation-service.serviceAccountName" . }}
       {{- end }}
       containers:
         - name: question-worker
@@ -29,9 +25,9 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
             - configMapRef:
-                name: {{ .Values.configMap.name | default (printf "%s-config" .Release.Name) }}
+                name: {{ include "question-generation-service.configMapName" . }}
             - secretRef:
-                name: {{ $secretName }}
+                name: {{ include "question-generation-service.secretName" . }}
           {{- if .Values.probes }}
           livenessProbe:
             {{- toYaml .Values.probes.liveness | nindent 12 }}

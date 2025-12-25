@@ -1,26 +1,22 @@
 ---
-{{- $secretName := "" }}
-{{- if or .Values.rbac.enabled (and .Values.global.rbac .Values.global.rbac.enabled) }}
-{{- $secretName = printf "%s-frontend-secrets" .Release.Name }}
-{{- else }}
-{{- $secretName = .Values.secret.name | default .Values.global.secretName | default (printf "%s-secrets" .Release.Name) }}
-{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-frontend
+  name: {{ include "frontend.fullname" . }}
+  labels:
+    {{- include "frontend.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: frontend
+      {{- include "frontend.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: frontend
+        {{- include "frontend.selectorLabels" . | nindent 8 }}
     spec:
       {{- if or .Values.rbac.enabled (and .Values.global.rbac .Values.global.rbac.enabled) }}
-      serviceAccountName: {{ .Release.Name }}-frontend-sa
+      serviceAccountName: {{ include "frontend.serviceAccountName" . }}
       {{- end }}
       containers:
         - name: frontend
@@ -30,9 +26,9 @@ spec:
             - containerPort: {{ .Values.service.targetPort }}
           envFrom:
             - configMapRef:
-                name: {{ .Values.configMap.name | default .Values.global.configMapName | default (printf "%s-config" .Release.Name) }}
+                name: {{ include "frontend.configMapName" . }}
             - secretRef:
-                name: {{ $secretName }}
+                name: {{ include "frontend.secretName" . }}
           {{- if .Values.probes }}
           livenessProbe:
             {{- toYaml .Values.probes.liveness | nindent 12 }}
