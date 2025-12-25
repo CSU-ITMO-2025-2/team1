@@ -155,27 +155,37 @@ jobs:
           echo "Updated values.yaml:"
           cat values.yaml | grep "tag:"
 
-      - name: Commit and push changes
-        working-directory: gitops
-        run: |
-          git config user.name "GitHub Actions Bot"
-          git config user.email "actions@github.com"
-          git add production/values.yaml
-          
-          # Проверяем, есть ли изменения
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "Update image tags to ${{ steps.vars.outputs.short_sha }}
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITOPS_PAT }}
+          path: gitops
+          commit-message: "chore: update image tags to ${{ steps.vars.outputs.short_sha }}"
+          branch: auto-update-${{ steps.vars.outputs.short_sha }}
+          delete-branch: true
+          title: "🤖 Update image tags to ${{ steps.vars.outputs.short_sha }}"
+          body: |
+            ## Automated Image Update
             
-            Updated by GitHub Actions from commit ${GITHUB_SHA}
-            Repository: ${{ github.repository }}
-            Workflow: ${{ github.workflow }}
-            Run: ${{ github.run_number }}"
-            git push
-            echo "Successfully updated GitOps repository"
-          fi
+            **Commit:** ${{ github.sha }}
+            **Repository:** ${{ github.repository }}
+            **Workflow:** ${{ github.workflow }}
+            **Run:** #${{ github.run_number }}
+            
+            ### Updated images:
+            - `core-api`: `${{ steps.vars.outputs.short_sha }}`
+            - `frontend`: `${{ steps.vars.outputs.short_sha }}`
+            - `resume-worker`: `${{ steps.vars.outputs.short_sha }}`
+            - `job-descr-worker`: `${{ steps.vars.outputs.short_sha }}`
+            - `question-worker`: `${{ steps.vars.outputs.short_sha }}`
+            
+            ---
+            *This PR was automatically created by GitHub Actions*
+          labels: |
+            automated
+            gitops
+            deployment
 
       - name: Create deployment annotation
         run: |
-          echo "::notice title=GitOps Update::Successfully updated team1-gitops with tag ${{ steps.vars.outputs.short_sha }}"
+          echo "::notice title=GitOps Update::Successfully created PR in team1-gitops with tag ${{ steps.vars.outputs.short_sha }}"
