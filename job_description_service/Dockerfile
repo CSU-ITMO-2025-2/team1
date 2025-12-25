@@ -6,6 +6,7 @@ RUN pip install --no-cache-dir --trusted-host pypi.org --trusted-host files.pyth
 
 COPY pyproject.toml uv.lock ./
 
+# Создать виртуальное окружение и установить зависимости
 RUN UV_HTTP_TIMEOUT=300 uv sync \
     --allow-insecure-host pypi.org \
     --allow-insecure-host files.pythonhosted.org \
@@ -16,4 +17,5 @@ ENV PYTHONPATH=/app
 
 COPY . .
 
-CMD ["uv", "run", "python", "-m", "worker"]
+# Использовать Python из виртуального окружения напрямую
+CMD [".venv/bin/python", "-m", "worker"]
