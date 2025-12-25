@@ -23,4 +23,26 @@ secret:
 rbac:
   enabled: false
 
+probes:
+  liveness:
+    exec:
+      command:
+        - /bin/sh
+        - -c
+        - "rabbitmq-diagnostics ping || exit 1"
+    initialDelaySeconds: 90
+    periodSeconds: 30
+    timeoutSeconds: 30
+    failureThreshold: 3
+  readiness:
+    exec:
+      command:
+        - /bin/sh
+        - -c
+        - "rabbitmq-diagnostics ping || exit 1"
+    initialDelaySeconds: 60
+    periodSeconds: 10
+    timeoutSeconds: 15
+    failureThreshold: 3
+
 

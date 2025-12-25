@@ -10,7 +10,7 @@ resources:
     cpu: "10m"
     memory: "150Mi"
   limits:
-    cpu: "200m"
+    cpu: "100m"
     memory: "300Mi"
 
 configMap:
@@ -29,4 +29,26 @@ autoscaling:
   queueName: "resume_evaluation_queue"
   queueLength: 10
   rabbitmqHost: ""
+
+probes:
+  liveness:
+    exec:
+      command:
+        - /bin/sh
+        - -c
+        - "test -f /proc/1/cmdline"
+    initialDelaySeconds: 60
+    periodSeconds: 30
+    timeoutSeconds: 10
+    failureThreshold: 3
+  readiness:
+    exec:
+      command:
+        - /bin/sh
+        - -c
+        - "test -f /proc/1/cmdline"
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
 

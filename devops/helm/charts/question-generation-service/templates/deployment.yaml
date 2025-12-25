@@ -32,6 +32,12 @@ spec:
                 name: {{ .Values.configMap.name | default (printf "%s-config" .Release.Name) }}
             - secretRef:
                 name: {{ $secretName }}
+          {{- if .Values.probes }}
+          livenessProbe:
+            {{- toYaml .Values.probes.liveness | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.probes.readiness | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
 

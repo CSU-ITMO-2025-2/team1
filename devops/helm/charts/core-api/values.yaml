@@ -7,10 +7,10 @@ replicaCount: 3
 
 resources:
   requests:
-    cpu: "300m"
+    cpu: "200m"
     memory: "512Mi"
   limits:
-    cpu: "300m"
+    cpu: "250m"
     memory: "512Mi"
 
 configMap:
@@ -25,6 +25,24 @@ service:
 
 rbac:
   enabled: false
+
+probes:
+  liveness:
+    httpGet:
+      path: /health
+      port: 8000
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  readiness:
+    httpGet:
+      path: /health
+      port: 8000
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
 
 
 

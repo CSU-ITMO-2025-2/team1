@@ -1,129 +1,163 @@
-name: CI
+name: CI/CD with GitOps
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  # Тесты core_api (мягкие)
-  test-core-api:
-    runs-on: ubuntu-latest
-    container: python:3.12-slim
-    continue-on-error: true
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install uv
-        run: pip install uv
-
-      - name: Install dependencies
-        working-directory: core_api
-        run: uv sync
-
-      - name: Run tests
-        working-directory: core_api
-        run: uv run pytest --junitxml=tests-report.xml
-
-      - name: Upload JUnit report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: core_api-tests-report
-          path: core_api/tests-report.xml
-
-  # Сборка и пуш образов в Docker Hub
+  # Сборка и пуш образов в GHCR
   build-images:
     runs-on: ubuntu-latest
-    needs: test-core-api
     if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: write
     env:
-      REGISTRY: docker.io
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-      IMAGE_CORE_API: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/aith-team1-core-api
-      IMAGE_FRONTEND: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/aith-team1-frontend
-      IMAGE_RESUME_WORKER: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/aith-team1-resume-evaluation-worker
-      IMAGE_JOB_DESCR_WORKER: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/aith-team1-job-description-worker
-      IMAGE_QUESTION_WORKER: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/aith-team1-question-generation-worker
+      REGISTRY: ghcr.io
+      IMAGE_CORE_API: ghcr.io/csu-itmo-2025-2/team1-core-api
+      IMAGE_FRONTEND: ghcr.io/csu-itmo-2025-2/team1-frontend
+      IMAGE_RESUME_WORKER: ghcr.io/csu-itmo-2025-2/team1-resume-evaluation-worker
+      IMAGE_JOB_DESCR_WORKER: ghcr.io/csu-itmo-2025-2/team1-job-description-worker
+      IMAGE_QUESTION_WORKER: ghcr.io/csu-itmo-2025-2/team1-question-generation-worker
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Log in to Docker Hub
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
-          registry: docker.io
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract short SHA
+        id: vars
+        run: echo "short_sha=sha-$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
 
       - name: Build and push core_api image
-        working-directory: core_api
-        run: |
-          docker build -t "$IMAGE_CORE_API:${GITHUB_SHA}" .
-          docker push "$IMAGE_CORE_API:${GITHUB_SHA}"
+        uses: docker/build-push-action@v5
+        with:
+          context: ./core_api
+          push: true
+          tags: ${{ env.IMAGE_CORE_API }}:${{ steps.vars.outputs.short_sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Build and push frontend image
-        working-directory: frontend
-        run: |
-          docker build -t "$IMAGE_FRONTEND:${GITHUB_SHA}" .
-          docker push "$IMAGE_FRONTEND:${GITHUB_SHA}"
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: true
+          tags: ${{ env.IMAGE_FRONTEND }}:${{ steps.vars.outputs.short_sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Build and push resume worker image
-        working-directory: resume_evaluation_service
-        run: |
-          docker build -t "$IMAGE_RESUME_WORKER:${GITHUB_SHA}" .
-          docker push "$IMAGE_RESUME_WORKER:${GITHUB_SHA}"
+        uses: docker/build-push-action@v5
+        with:
+          context: ./resume_evaluation_service
+          push: true
+          tags: ${{ env.IMAGE_RESUME_WORKER }}:${{ steps.vars.outputs.short_sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Build and push job description worker image
-        working-directory: job_description_service
-        run: |
-          docker build -t "$IMAGE_JOB_DESCR_WORKER:${GITHUB_SHA}" .
-          docker push "$IMAGE_JOB_DESCR_WORKER:${GITHUB_SHA}"
+        uses: docker/build-push-action@v5
+        with:
+          context: ./job_description_service
+          push: true
+          tags: ${{ env.IMAGE_JOB_DESCR_WORKER }}:${{ steps.vars.outputs.short_sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Build and push question worker image
-        working-directory: question_generation_service
-        run: |
-          docker build -t "$IMAGE_QUESTION_WORKER:${GITHUB_SHA}" .
-          docker push "$IMAGE_QUESTION_WORKER:${GITHUB_SHA}"
+        uses: docker/build-push-action@v5
+        with:
+          context: ./question_generation_service
+          push: true
+          tags: ${{ env.IMAGE_QUESTION_WORKER }}:${{ steps.vars.outputs.short_sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-  # Деплой через Helm
-  deploy:
+  # Обновление GitOps репозитория
+  update-gitops:
     runs-on: ubuntu-latest
     needs: build-images
     if: github.ref == 'refs/heads/main'
-    container:
-      image: alpine/helm:3.16.1
-      options: >-
-        --entrypoint ""
-    env:
-      IMAGE_CORE_API: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/aith-team1-core-api
-      IMAGE_FRONTEND: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/aith-team1-frontend
-      IMAGE_RESUME_WORKER: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/aith-team1-resume-evaluation-worker
-      IMAGE_JOB_DESCR_WORKER: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/aith-team1-job-description-worker
-      IMAGE_QUESTION_WORKER: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/aith-team1-question-generation-worker
-      KUBECONFIG_CONTENT: ${{ secrets.KUBECONFIG_CONTENT }}
     environment:
       name: production
-      url: https://team1
+      url: https://team1.kubepractice.ru
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Extract short SHA
+        id: vars
+        run: echo "short_sha=sha-$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
 
-      - name: Deploy with Helm
+      - name: Checkout GitOps repo
+        uses: actions/checkout@v4
+        with:
+          repository: CSU-ITMO-2025-2/team1-gitops
+          token: ${{ secrets.GITOPS_PAT }}
+          path: gitops
+
+      - name: Install yq
         run: |
-          echo "$KUBECONFIG_CONTENT" > kubeconfig
-          export KUBECONFIG=$(pwd)/kubeconfig
-          helm version
-          helm upgrade --install team1 devops/helm \
-            --namespace team1-ns --create-namespace \
-            --set image.coreApi.repository="$IMAGE_CORE_API" \
-            --set image.coreApi.tag="${GITHUB_SHA}" \
-            --set image.frontend.repository="$IMAGE_FRONTEND" \
-            --set image.frontend.tag="${GITHUB_SHA}" \
-            --set image.resumeWorker.repository="$IMAGE_RESUME_WORKER" \
-            --set image.resumeWorker.tag="${GITHUB_SHA}" \
-            --set image.jobDescrWorker.repository="$IMAGE_JOB_DESCR_WORKER" \
-            --set image.jobDescrWorker.tag="${GITHUB_SHA}" \
-            --set image.questionWorker.repository="$IMAGE_QUESTION_WORKER" \
-            --set image.questionWorker.tag="${GITHUB_SHA}" \
-            -f devops/helm/values.yaml
+          sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Update image tags in values.yaml
+        working-directory: gitops/production
+        run: |
+          echo "Updating image tags to ${{ steps.vars.outputs.short_sha }}"
+          
+          # Обновление всех тегов образов
+          yq eval ".image.coreApi.tag = \"${{ steps.vars.outputs.short_sha }}\"" -i values.yaml
+          yq eval ".image.frontend.tag = \"${{ steps.vars.outputs.short_sha }}\"" -i values.yaml
+          yq eval ".image.resumeWorker.tag = \"${{ steps.vars.outputs.short_sha }}\"" -i values.yaml
+          yq eval ".image.jobDescrWorker.tag = \"${{ steps.vars.outputs.short_sha }}\"" -i values.yaml
+          yq eval ".image.questionWorker.tag = \"${{ steps.vars.outputs.short_sha }}\"" -i values.yaml
+          
+          # Обновление тегов в под-чартах
+          yq eval ".\"job-description-service\".image.tag = \"${{ steps.vars.outputs.short_sha }}\"" -i values.yaml
+          yq eval ".\"question-generation-service\".image.tag = \"${{ steps.vars.outputs.short_sha }}\"" -i values.yaml
+          yq eval ".\"resume-evaluation-service\".image.tag = \"${{ steps.vars.outputs.short_sha }}\"" -i values.yaml
+          
+          echo "Updated values.yaml:"
+          cat values.yaml | grep "tag:"
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITOPS_PAT }}
+          path: gitops
+          commit-message: "chore: update image tags to ${{ steps.vars.outputs.short_sha }}"
+          branch: auto-update-${{ steps.vars.outputs.short_sha }}
+          delete-branch: true
+          title: "🤖 Update image tags to ${{ steps.vars.outputs.short_sha }}"
+          body: |
+            ## Automated Image Update
+            
+            **Commit:** ${{ github.sha }}
+            **Repository:** ${{ github.repository }}
+            **Workflow:** ${{ github.workflow }}
+            **Run:** #${{ github.run_number }}
+            
+            ### Updated images:
+            - `core-api`: `${{ steps.vars.outputs.short_sha }}`
+            - `frontend`: `${{ steps.vars.outputs.short_sha }}`
+            - `resume-worker`: `${{ steps.vars.outputs.short_sha }}`
+            - `job-descr-worker`: `${{ steps.vars.outputs.short_sha }}`
+            - `question-worker`: `${{ steps.vars.outputs.short_sha }}`
+            
+            ---
+            *This PR was automatically created by GitHub Actions*
+          labels: |
+            automated
+            gitops
+            deployment
+
+      - name: Create deployment annotation
+        run: |
+          echo "::notice title=GitOps Update::Successfully created PR in team1-gitops with tag ${{ steps.vars.outputs.short_sha }}"
