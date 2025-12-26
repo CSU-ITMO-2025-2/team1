@@ -1,28 +1,24 @@
 ---
-{{- $secretName := "" }}
-{{- if or .Values.rbac.enabled (and .Values.global.rbac .Values.global.rbac.enabled) }}
-{{- $secretName = printf "%s-workers-secrets" .Release.Name }}
-{{- else }}
-{{- $secretName = .Values.secret.name | default .Values.global.secretName | default (printf "%s-secrets" .Release.Name) }}
-
-{{- end }}
+{{- include "job-description-service.validateValues" . }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-job-descr-worker
+  name: {{ include "job-description-service.deploymentName" . }}
+  labels:
+    {{- include "job-description-service.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: job-descr-worker
+      {{- include "job-description-service.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: job-descr-worker
+        {{- include "job-description-service.selectorLabels" . | nindent 8 }}
         egress: openai-via-squid
     spec:
       {{- if or .Values.rbac.enabled (and .Values.global.rbac .Values.global.rbac.enabled) }}
-      serviceAccountName: {{ .Release.Name }}-workers-sa
+      serviceAccountName: {{ include "job-description-service.serviceAccountName" . }}
       {{- end }}
       containers:
         - name: job-descr-worker
@@ -30,9 +26,9 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
             - configMapRef:
-                name: {{ .Values.configMap.name | default (printf "%s-config" .Release.Name) }}
+                name: {{ include "job-description-service.configMapName" . }}
             - secretRef:
-                name: {{ $secretName }}
+                name: {{ include "job-description-service.secretName" . }}
           {{- if .Values.probes }}
           livenessProbe:
             {{- toYaml .Values.probes.liveness | nindent 12 }}

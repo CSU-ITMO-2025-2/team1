@@ -3,24 +3,28 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{ .Release.Name }}-core-api-secret-reader
+  name: {{ include "core-api.fullname" . }}-secret-reader
+  labels:
+    {{- include "core-api.labels" . | nindent 4 }}
 rules:
   - apiGroups: [""]
     resources: ["secrets"]
-    resourceNames: ["{{ .Release.Name }}-core-api-secrets"]
+    resourceNames: ["{{ include "core-api.secretName" . }}"]
     verbs: ["get", "list"]
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: {{ .Release.Name }}-core-api-secret-binding
+  name: {{ include "core-api.fullname" . }}-secret-binding
+  labels:
+    {{- include "core-api.labels" . | nindent 4 }}
 subjects:
   - kind: ServiceAccount
-    name: {{ .Release.Name }}-core-api-sa
+    name: {{ include "core-api.serviceAccountName" . }}
 roleRef:
   kind: Role
-  name: {{ .Release.Name }}-core-api-secret-reader
+  name: {{ include "core-api.fullname" . }}-secret-reader
   apiGroup: rbac.authorization.k8s.io
 {{- end }}
 

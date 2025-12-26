@@ -1,26 +1,23 @@
 ---
-{{- $secretName := "" }}
-{{- if or .Values.rbac.enabled (and .Values.global.rbac .Values.global.rbac.enabled) }}
-{{- $secretName = printf "%s-rabbitmq-secrets" .Release.Name }}
-{{- else }}
-{{- $secretName = .Values.secret.name | default .Values.global.secretName | default (printf "%s-secrets" .Release.Name) }}
-{{- end }}
+{{- include "rabbitmq.validateValues" . }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-rabbitmq
+  name: {{ include "rabbitmq.fullname" . }}
+  labels:
+    {{- include "rabbitmq.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: rabbitmq
+      {{- include "rabbitmq.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: rabbitmq
+        {{- include "rabbitmq.selectorLabels" . | nindent 8 }}
     spec:
       {{- if or .Values.rbac.enabled (and .Values.global.rbac .Values.global.rbac.enabled) }}
-      serviceAccountName: {{ .Release.Name }}-rabbitmq-sa
+      serviceAccountName: {{ include "rabbitmq.serviceAccountName" . }}
       {{- end }}
       containers:
         - name: rabbitmq
@@ -31,12 +28,12 @@ spec:
             - name: RABBITMQ_DEFAULT_PASS
               valueFrom:
                 secretKeyRef:
-                  name: {{ $secretName }}
+                  name: {{ include "rabbitmq.secretName" . }}
                   key: RABBITMQ_DEFAULT_PASS
             - name: RABBITMQ_DEFAULT_VHOST
               valueFrom:
                 configMapKeyRef:
-                  name: {{ .Values.configMap.name | default .Values.global.configMapName | default (printf "%s-config" .Release.Name) }}
+                  name: {{ include "rabbitmq.configMapName" . }}
                   key: RABBITMQ_DEFAULT_VHOST
           command: ["/bin/bash", "-c"]
           args:
