@@ -10,6 +10,14 @@ render_profile_button()
 
 st.title("Генерация вопросов кандидату")
 
+NS = "questions_gen"  # namespace для ключей страницы
+
+def k(name: str) -> str:
+    """Формирует ключ для session_state с namespace."""
+    return f"{NS}:{name}"
+
+# --- состояние ---
+st.session_state.setdefault(k("processing"), False)  # флаг обработки запроса
 
 st.caption("Загрузите два файла: **вакансию** и **резюме**. ")
 
@@ -26,12 +34,14 @@ with col_cv:
     # Проверка загрузки файлов
     disabled = not (vacancy_file and resume_file)
 
+processing = st.session_state[k("processing")]
 
 # Кнопка оценки
-if st.button("Сгенерировать вопросы", disabled=disabled, type="primary"):
+if st.button("Сгенерировать вопросы", disabled=disabled or processing, type="primary"):
     if disabled:
         st.warning("Пожалуйста, загрузите оба файла")
-    else:
+    elif not processing:  # Защита от повторных нажатий
+        st.session_state[k("processing")] = True
         with st.spinner("Отправляем на сервер и ждём ответ…"):
             try:
                 # Отправляем либо файлы, либо текст
@@ -45,3 +55,5 @@ if st.button("Сгенерировать вопросы", disabled=disabled, typ
             else:
                 st.success("Готово!")
                 get_report(result)
+            finally:
+                st.session_state[k("processing")] = False
