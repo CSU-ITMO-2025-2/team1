@@ -747,6 +747,7 @@ name = "resume-evaluation-service"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "httpx" },
     { name = "langchain" },
     { name = "langchain-core" },
     { name = "langchain-mistralai" },
@@ -758,6 +759,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "httpx", specifier = ">=0.27.0" },
     { name = "langchain", specifier = "==0.3.27" },
     { name = "langchain-core", specifier = "==0.3.74" },
     { name = "langchain-mistralai", specifier = ">=0.2.12" },
