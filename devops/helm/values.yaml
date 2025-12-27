@@ -1,16 +1,14 @@
 global:
-  configMapName: ""  # Будет использовано значение по умолчанию {{ .Release.Name }}-config
-  secretName: "team-1-secrets"  # Имя существующего secret. Если пусто, будет использовано значение по умолчанию {{ .Release.Name }}-secrets
+  configMapName: ""
+  secretName: "team-1-secrets"
   rbac:
-    enabled: false  # Set to true to enable RBAC-based secret isolation (can be overridden in subcharts)
+    enabled: false
 
-# Replica counts for deployments
 replicaCount:
   coreApi: 1
   frontend: 1
   workers: 1
 
-# Image configurations
 image:
   authService:
     repository: erofeevdma/aith-team1-auth-service
@@ -38,38 +36,33 @@ image:
     pullPolicy: Always
 
 replicaCount:
-  coreApi: 3  # Increased for HA (HPA will manage scaling)
-  frontend: 1  # Increased for HA (HPA will manage scaling)
+  coreApi: 3
+  frontend: 1
 
-# Resource requests/limits based on actual usage metrics
-# IMPORTANT: Current values are from IDLE state (no load)
-# Actual idle usage: Core API (2m CPU, 81Mi RAM), Frontend (1m CPU, 200Mi RAM)
-# TODO: Adjust after load testing or monitoring production traffic
 resources:
   coreApi:
     requests:
-      cpu: "100m"      # Conservative: allows 50x growth from idle
-      memory: "256Mi"  # Conservative: allows 3x growth (recommend monitoring)
+      cpu: "100m"
+      memory: "256Mi"
     limits:
-      cpu: "500m"      # Allow bursts during high load
-      memory: "512Mi"  # Original limit maintained
+      cpu: "500m"
+      memory: "512Mi"
   frontend:
     requests:
-      cpu: "50m"       # Conservative: Streamlit can be heavier under load
-      memory: "256Mi"  # Already using 200Mi idle, needs headroom
+      cpu: "50m"
+      memory: "256Mi"
     limits:
-      cpu: "200m"      # Allow bursts
-      memory: "512Mi"  # Higher limit for peak usage
+      cpu: "200m"
+      memory: "512Mi"
 
-# Autoscaling configuration
 autoscaling:
   coreApi:
-    enabled: false # turn on
+    enabled: false
     minReplicas: 2
     maxReplicas: 5
-    targetMemoryUtilization: 70  # Scale when memory >70%
+    targetMemoryUtilization: 70
   frontend:
-    enabled: false # turn on
+    enabled: false
     minReplicas: 2
     maxReplicas: 5
     targetMemoryUtilization: 70
@@ -101,26 +94,24 @@ env:
   logLevel: INFO
 
 secrets:
-  useExternal: True # используем Vault
-  useExisting: False # true для тестов
+  useExternal: True
+  useExisting: False
   existingSecretName: "hr-assist-secrets"
   
   vault:
-    server: "https://vault.kubepractice.ru"  # URL внешнего Vault
-    mountPath: "secret"  # Mount path для KV секретов (secret или kv)
-    path: "team1/hr-assist"  # Путь к секретам в Vault
-    username: ""  # Имя пользователя для аутентификации в Vault
-    password: ""  # Пароль для аутентификации в Vault
+    server: "https://vault.kubepractice.ru"
+    mountPath: "secret"
+    path: "team1/hr-assist"
+    username: ""
+    password: ""
   
   openaiApiKey: ""
   kcClientSecret: ""
   rabbitmqPassword: ""
   postgresPassword: ""
-# временно пока не разобрались с external secrets
 
-# RBAC Configuration
 rbac:
-  enabled: false  # Set to true to enable RBAC-based secret isolation
+  enabled: false
 
 job-description-service:
   image:
@@ -132,14 +123,13 @@ job-description-service:
     name: ""
   secret:
     name: "hr-assist-secrets"
-  # KEDA autoscaling configuration (queue-based)
   autoscaling:
-    enabled: false # turn on
+    enabled: false
     minReplicaCount: 1
     maxReplicaCount: 5
     queueName: "job_description_queue"
-    queueLength: 10  # Scale 1 replica per 10 messages in queue
-    rabbitmqHost: ""  # Will use RabbitMQ service name from parent chart
+    queueLength: 10
+    rabbitmqHost: ""
 
 question-generation-service:
   image:
@@ -151,14 +141,13 @@ question-generation-service:
     name: ""
   secret:
     name: "hr-assist-secrets"
-  # KEDA autoscaling configuration (queue-based)
   autoscaling:
-    enabled: false  # turn on
+    enabled: false
     minReplicaCount: 1
     maxReplicaCount: 5
     queueName: "question_generation_queue"
-    queueLength: 10  # Scale 1 replica per 10 messages in queue
-    rabbitmqHost: ""  # Will use RabbitMQ service name from parent chart
+    queueLength: 10
+    rabbitmqHost: ""
 
 resume-evaluation-service:
   image:
@@ -170,21 +159,15 @@ resume-evaluation-service:
     name: ""
   secret:
     name: "hr-assist-secrets"
-  # KEDA autoscaling configuration (queue-based)
   autoscaling:
-    enabled: false  # turn on
+    enabled: false
     minReplicaCount: 1
     maxReplicaCount: 5
     queueName: "resume_evaluation_queue"
-    queueLength: 10  # Scale 1 replica per 10 messages in queue
-    rabbitmqHost: ""  # Will use RabbitMQ service name from parent chart
+    queueLength: 10
+    rabbitmqHost: ""
 
 networkPolicy:
   enabled: true
-  name: team1-project-egress-openai-via-squid  # Используем существующее имя
+  name: team1-project-egress-openai-via-squid
 
-# Istio Service Mesh configuration for Circuit Breaker
-istio:
-  enabled: false  # Установите true для включения Circuit Breaker через Istio
-  # Circuit Breaker будет работать автоматически после установки Istio
-  # и включения этой опции  

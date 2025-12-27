@@ -17,15 +17,6 @@ Frontend → Core API → PostgreSQL
 
 ---
 
-## Требования
-
-- Kubernetes кластер (1.24+)
-- Helm 3.x
-- kubectl
-- Доступ к Docker registry
-
-**Минимальные ресурсы:** CPU: 4 cores, Memory: 8 GB, Storage: 20 GB
-
 ---
 
 ## Развертывание
@@ -244,14 +235,6 @@ _Место для описания CI/CD-пайплайна, автоматич
 
 Конфигурация находится в `devops/helm/templates/vault-externalsecret.yaml`. Каждый сервис получает только свои секреты (принцип наименьших привилегий).
 
-**Kubernetes Secrets:**
-
-Альтернативный вариант - использование стандартных Kubernetes Secrets. Конфигурация в `devops/helm/templates/secret.yaml`.
-
-**Sealed Secrets:**
-
-Поддержка Sealed Secrets для безопасного хранения секретов в Git-репозитории.
-
 ### Управление конфигурациями
 
 **ConfigMap:**
@@ -295,11 +278,6 @@ _Место для описания CI/CD-пайплайна, автоматич
 
 Настроен Ingress (`devops/helm/templates/ingress.yaml`) с поддержкой TLS:
 - Маршрутизация: `/` → Frontend (порт 8501), `/api` → Core API (порт 8000)
-- Поддержка TLS-сертификатов (можно настроить через cert-manager)
-
-### JWT (JSON Web Tokens)
-
-JWT может быть реализован на уровне приложения через библиотеки аутентификации. Инфраструктура Kubernetes обеспечивает безопасную передачу токенов через ServiceAccount и RBAC.
 
 ### Network Policies
 
@@ -356,9 +334,6 @@ Probes настроены в values.yaml каждого сервиса и при
 **Resource Limits:**
 - Установлены CPU и Memory limits для всех сервисов
 - Предотвращение исчерпания ресурсов кластера
-
-**Circuit Breaker:**
-Не реализован на уровне инфраструктуры Kubernetes. Может быть реализован на уровне приложения через библиотеки (`circuitbreaker`, `tenacity` для Python).
 
 ---
 
@@ -432,8 +407,7 @@ Core API отправляет задачи в очереди RabbitMQ, worker-с
 |---------|--------|------------|
 | Микросервисы (≥3) | ✅ | Реализовано 7 микросервисов |
 | Развертывание через Helm | ✅ | Иерархическая структура с subcharts |
-| GitOps-деплой | ✅ |  |
-| CI/CD-пайплайн | ⏳ |  |
+| GitOps-деплой | ✅ | ArgoCD, CI-CD пайлайны |
 | Секреты и конфигурации | ✅ | Vault, Kubernetes Secrets, ConfigMap |
 | Безопасность (RBAC, HTTPS, JWT) | ✅ | RBAC, Ingress с TLS, Network Policies |
 | Масштабирование (HPA, KEDA) | ✅ | HPA для API/Frontend, KEDA для workers |
@@ -447,8 +421,11 @@ Core API отправляет задачи в очереди RabbitMQ, worker-с
 
 ## Список участников
 
-- **Поляков Егор** - Развертывание через Helm, Probes
-
+- Поляков Егор - helm чарты, probes, документация
+- Ильин Глеб - Безопаность, HPA
+- Пискаев Максим - Chaos Engineering, доработка арго и докерфайлов
+- Дорофеев Дмитирй - Настройка Rabbit
+- Поляков Эдуард - Настройка Секретов, Настройка Арго
 ---
 
 
