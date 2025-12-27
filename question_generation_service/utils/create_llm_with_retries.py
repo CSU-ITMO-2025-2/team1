@@ -8,6 +8,7 @@ from typing import Type
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel
+import httpx
 
 # Конфигурация
 MAX_ATTEMPTS = 10  # всего 10 попыток на исправление
@@ -41,18 +42,31 @@ def get_structured_llm(
     api_base = os.getenv("OPENAI_API_BASE")
     api_key = os.getenv("OPENAI_API_KEY")
     model_name = os.getenv("OPENAI_MODEL_NAME")
+    
+    # Настройка прокси
+    http_proxy = os.getenv("HTTP_PROXY") or os.getenv("HTTPS_PROXY")
+    http_client = None
+    if http_proxy:
+        print(f"Используется прокси: {http_proxy}")
+        http_client = httpx.Client(proxy=http_proxy, timeout=60.0)
 
     # if not api_base or not api_key or not model_name:
     #     raise ValueError("Не видно переменные окружения")
 
     # Инициализируем LLM с нужной температурой
-    llm = ChatOpenAI(
-        model=model_name,
-        api_key=api_key,
-        base_url=api_base,
-        temperature=temperature,
-        # timeout=60,
-    )
+    llm_kwargs = {
+        "model": model_name,
+        "api_key": api_key,
+        "base_url": api_base,
+        "temperature": temperature,
+    }
+    
+    # Передаем http_client если есть прокси
+    if http_client:
+        llm_kwargs["http_client"] = http_client
+    
+    llm = ChatOpenAI(**llm_kwargs)
+    
     # llm = ChatMistralAI(
     #     model_name = model_name,
     #     api_key = api_key,
