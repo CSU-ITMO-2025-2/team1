@@ -76,6 +76,7 @@ st.session_state.setdefault(k("result"), None)  # результат выпол�
 st.session_state.setdefault(k("uploader_key"), 0)  # id загрузки
 st.session_state.setdefault(k("busy"), False)  # loading
 st.session_state.setdefault(k("case_input_text"), "")  # исходные данные
+st.session_state.setdefault(k("request_sent"), False)  # флаг отправки запроса
 
 busy = st.session_state[k("busy")]
 
@@ -123,37 +124,42 @@ with row:
     spin_slot = st.empty()
 
 if st.session_state[k("busy")]:
-    # показываем спиннер
-    with spin_slot, st.spinner("Изучаю резюме и вакансию..."):
-        # Получаем файлы из session_state
-        vacancy_key = k(f"vacancy_file_{st.session_state[k('uploader_key')]}")
-        resume_key = k(f"resume_file_{st.session_state[k('uploader_key')]}")
-        vac_file = st.session_state.get(vacancy_key)
-        res_file = st.session_state.get(resume_key)
+    # Проверяем, был ли уже отправлен запрос (защита от дублирования при st.rerun)
+    if not st.session_state[k("request_sent")]:
+        st.session_state[k("request_sent")] = True  # Устанавливаем флаг
+        
+        # показываем спиннер
+        with spin_slot, st.spinner("Изучаю резюме и вакансию..."):
+            # Получаем файлы из session_state
+            vacancy_key = k(f"vacancy_file_{st.session_state[k('uploader_key')]}")
+            resume_key = k(f"resume_file_{st.session_state[k('uploader_key')]}")
+            vac_file = st.session_state.get(vacancy_key)
+            res_file = st.session_state.get(resume_key)
 
-        try:
-            # Отправляем файлы на сервер
-            result_raw = resume_evaluation(
-                vacancy_file=vac_file,
-                resume_file=res_file,
-            )
-            result = result_raw.get("data", result_raw)
+            try:
+                # Отправляем файлы на сервер
+                result_raw = resume_evaluation(
+                    vacancy_file=vac_file,
+                    resume_file=res_file,
+                )
+                result = result_raw.get("data", result_raw)
 
-            # Сохраняем результат
-            st.session_state[k("result")] = result
-            # Сохраняем исходные данные для PDF
-            st.session_state[k("case_input_text")] = compose_case_input_text(
-                "Файл",
-                None,
-                vac_file,
-                resume_file=res_file,
-            )
-        except Exception:
-            st.error("Извините, произошла техническая ошибка")
-            st.session_state[k("result")] = None
-        finally:
-            st.session_state[k("busy")] = False
-            st.rerun()
+                # Сохраняем результат
+                st.session_state[k("result")] = result
+                # Сохраняем исходные данные для PDF
+                st.session_state[k("case_input_text")] = compose_case_input_text(
+                    "Файл",
+                    None,
+                    vac_file,
+                    resume_file=res_file,
+                )
+            except Exception:
+                st.error("Извините, произошла техническая ошибка")
+                st.session_state[k("result")] = None
+            finally:
+                st.session_state[k("busy")] = False
+                st.session_state[k("request_sent")] = False  # Сбрасываем флаг
+                st.rerun()
 
 # Отображение результата
 result = st.session_state[k("result")]
