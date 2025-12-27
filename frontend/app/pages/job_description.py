@@ -34,6 +34,7 @@ st.session_state.setdefault(k("mode"), "Текст")  # тип загрузки
 st.session_state.setdefault(k("busy"), False)  # loading для
 st.session_state.setdefault(k("pending_mode"), None)
 st.session_state.setdefault(k("case_input_text"), "")
+st.session_state.setdefault(k("request_sent"), False)  # флаг отправки запроса
 
 busy = st.session_state[k("busy")]
 
@@ -106,29 +107,34 @@ if submitted and not busy:
         st.rerun()
 
 if st.session_state[k("busy")]:
-    # показываем спиннер
-    with spin_slot, st.spinner("Генерируем описание вакансии…"):
-        # собери входные данные
-        current_mode = st.session_state.get(k("pending_mode")) or "Текст"
-        if current_mode == "Текст":
-            text = st.session_state.get(k("job_input"), "")
-            file_obj = None
-            st.session_state[k("case_input_text")] = compose_case_input_text("Текст", text, None)
-        else:
-            upload_key = k(f"job_file_{st.session_state[k('uploader_key')]}")
-            file_obj = st.session_state.get(upload_key)
-            text = None
-            st.session_state[k("case_input_text")] = compose_case_input_text("Файл", None, file_obj)
+    # Проверяем, был ли уже отправлен запрос (защита от дублирования при st.rerun)
+    if not st.session_state[k("request_sent")]:
+        st.session_state[k("request_sent")] = True  # Устанавливаем флаг
+        
+        # показываем спиннер
+        with spin_slot, st.spinner("Генерируем описание вакансии…"):
+            # собери входные данные
+            current_mode = st.session_state.get(k("pending_mode")) or "Текст"
+            if current_mode == "Текст":
+                text = st.session_state.get(k("job_input"), "")
+                file_obj = None
+                st.session_state[k("case_input_text")] = compose_case_input_text("Текст", text, None)
+            else:
+                upload_key = k(f"job_file_{st.session_state[k('uploader_key')]}")
+                file_obj = st.session_state.get(upload_key)
+                text = None
+                st.session_state[k("case_input_text")] = compose_case_input_text("Файл", None, file_obj)
 
-        try:
-            result = get_vacancy_description(input_data=text, input_file=file_obj)
-            st.session_state[k("result")] = result
-        except Exception:
-            st.session_state[k("result")] = None
-            st.error("Извините, произошла техническая ошибка")
+            try:
+                result = get_vacancy_description(input_data=text, input_file=file_obj)
+                st.session_state[k("result")] = result
+            except Exception:
+                st.session_state[k("result")] = None
+                st.error("Извините, произошла техническая ошибка")
 
-    st.session_state[k("busy")] = False
-    st.rerun()
+        st.session_state[k("busy")] = False
+        st.session_state[k("request_sent")] = False  # Сбрасываем флаг
+        st.rerun()
 
 
 result = st.session_state[k("result")]
