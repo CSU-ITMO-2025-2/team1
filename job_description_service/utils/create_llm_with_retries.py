@@ -48,7 +48,11 @@ def get_structured_llm(
     http_client = None
     if http_proxy:
         print(f"Используется прокси: {http_proxy}")
-        http_client = httpx.Client(proxy=http_proxy, timeout=60.0)
+        mounts = {
+            "http://": httpx.HTTPTransport(proxy=http_proxy),
+            "https://": httpx.HTTPTransport(proxy=http_proxy),
+        }
+        http_client = httpx.Client(mounts=mounts, timeout=60.0)
 
     # if not api_base or not api_key or not model_name:
     #     raise ValueError("Не видно переменные окружения")
