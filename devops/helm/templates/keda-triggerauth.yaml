@@ -1,5 +1,10 @@
-{{- if or .Values.job-description-service.autoscaling.enabled .Values.question-generation-service.autoscaling.enabled .Values.resume-evaluation-service.autoscaling.enabled }}
----
+{{- $jobDesc := index .Values "job-description-service" | default dict }}
+{{- $question := index .Values "question-generation-service" | default dict }}
+{{- $resume := index .Values "resume-evaluation-service" | default dict }}
+{{- $jobDescAutoscaling := get $jobDesc "autoscaling" | default dict }}
+{{- $questionAutoscaling := get $question "autoscaling" | default dict }}
+{{- $resumeAutoscaling := get $resume "autoscaling" | default dict }}
+{{- if or (get $jobDescAutoscaling "enabled" | default false) (get $questionAutoscaling "enabled" | default false) (get $resumeAutoscaling "enabled" | default false) }}
 apiVersion: keda.sh/v1alpha1
 kind: TriggerAuthentication
 metadata:
