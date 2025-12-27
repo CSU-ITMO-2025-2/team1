@@ -180,5 +180,4 @@ resume-evaluation-service:
     rabbitmqHost: ""  # Will use RabbitMQ service name from parent chart
 
 networkPolicy:
-  enabled: true
-  name: team1-project-egress-openai-via-squid  # Используем существующее имя  
+  enabled: true  
