@@ -56,6 +56,10 @@ spec:
     name: {{ .Release.Name }}-rabbitmq-secrets
     creationPolicy: Owner
   data:
+    - secretKey: RABBITMQ_DEFAULT_USER
+      remoteRef:
+        key: team1/hr-assist/rabbitmq
+        property: RABBITMQ_DEFAULT_USER
     - secretKey: RABBITMQ_DEFAULT_PASS
       remoteRef:
         key: team1/hr-assist/rabbitmq

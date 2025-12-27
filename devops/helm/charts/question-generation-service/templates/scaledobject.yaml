@@ -22,4 +22,6 @@ spec:
       query: |
         rabbitmq_queue_messages_ready{queue="{{ .Values.autoscaling.queueName }}"}
       threshold: {{ .Values.autoscaling.queueLength | quote }}
+    authenticationRef:
+      name: {{ .Release.Name }}-rabbitmq-prometheus-auth
 {{- end }}
