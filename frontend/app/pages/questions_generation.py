@@ -18,6 +18,7 @@ def k(name: str) -> str:
 
 # --- состояние ---
 st.session_state.setdefault(k("processing"), False)  # флаг обработки запроса
+st.session_state.setdefault(k("result"), None)  # результат генерации
 
 st.caption("Загрузите два файла: **вакансию** и **резюме**. ")
 
@@ -50,10 +51,14 @@ if st.button("Сгенерировать вопросы", disabled=disabled or p
                     resume_file=resume_file
                 )
                 result = result_raw.get("data", result_raw)
-            except Exception:
-                st.error("Извините, произошла техническая ошибка")
-            else:
-                st.success("Готово!")
-                get_report(result)
+                st.session_state[k("result")] = result  # Сохраняем результат
+            except Exception as e:
+                st.error(f"Извините, произошла техническая ошибка: {e}")
+                st.session_state[k("result")] = None  # Очищаем результат при ошибке
             finally:
                 st.session_state[k("processing")] = False
+
+# Отображаем результат вне блока кнопки
+if st.session_state[k("result")] is not None:
+    st.success("Готово!")
+    get_report(st.session_state[k("result")])
