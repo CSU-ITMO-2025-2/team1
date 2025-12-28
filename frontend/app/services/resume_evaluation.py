@@ -33,6 +33,13 @@ def resume_evaluation(
     vacancy_text = extract_text_from_file(vacancy_file)
     resume_text = extract_text_from_file(resume_file)
 
+    # Валидация извлеченного текста
+    if not vacancy_text or not vacancy_text.strip():
+        raise ValueError("Не удалось извлечь текст из файла вакансии. Проверьте формат файла (поддерживаются PDF, DOCX, TXT).")
+    
+    if not resume_text or not resume_text.strip():
+        raise ValueError("Не удалось извлечь текст из файла резюме. Проверьте формат файла (поддерживаются PDF, DOCX, TXT).")
+
     # Формируем JSON запрос
     payload = {
         "vacancy_text": vacancy_text,

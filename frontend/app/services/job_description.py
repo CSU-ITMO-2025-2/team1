@@ -41,6 +41,10 @@ def get_vacancy_description(
     else:
         raise ValueError("Необходимо указать input_data или input_file")
 
+    # Валидация извлеченного текста
+    if not text or not text.strip():
+        raise ValueError("Не удалось извлечь текст из файла. Проверьте формат файла (поддерживаются PDF, DOCX, TXT).")
+
     # Формируем JSON запрос
     payload = {
         "input_data": text,

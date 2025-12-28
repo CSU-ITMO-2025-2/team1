@@ -101,27 +101,34 @@ with col_cv:
 # Проверка загрузки файлов
 disabled = not (vacancy_file and resume_file)
 
-# Контейнер под кнопку и спиннер
-row = st.container(
-    horizontal=True,
-    gap="small",
-    height=60,
-    vertical_alignment="center",
-    horizontal_alignment="left",
-    border=False,
-)
+# Форма для кнопки оценки
+with st.form("resume_eval_form"):
+    row = st.container(
+        horizontal=True,
+        gap="small",
+        height=60,
+        vertical_alignment="center",
+        horizontal_alignment="left",
+        border=False,
+    )
 
-with row:
-    # Кнопка оценки
-    if st.button("Оценить соответствие", disabled=disabled or busy, type="primary"):
-        if disabled:
-            st.warning("Пожалуйста, загрузите оба файла.")
-        else:
-            st.session_state[k("busy")] = True
-            st.rerun()
+    with row:
+        submitted = st.form_submit_button(
+            "Оценить соответствие",
+            disabled=disabled or busy,
+            type="primary"
+        )
 
-with row:
-    spin_slot = st.empty()
+    with row:
+        spin_slot = st.empty()
+
+# Обработка отправки формы
+if submitted and not busy:
+    if disabled:
+        st.warning("Пожалуйста, загрузите оба файла.")
+    else:
+        st.session_state[k("busy")] = True
+        st.rerun()
 
 if st.session_state[k("busy")]:
     # Проверяем, был ли уже отправлен запрос (защита от дублирования при st.rerun)
@@ -153,8 +160,15 @@ if st.session_state[k("busy")]:
                     vac_file,
                     resume_file=res_file,
                 )
-            except Exception:
-                st.error("Извините, произошла техническая ошибка")
+            except Exception as e:
+                error_message = str(e)
+                # Проверяем тип ошибки
+                if "422" in error_message or "Unprocessable Entity" in error_message:
+                    st.error("❌ Ошибка валидации данных\n\nНе удалось извлечь текст из файлов. Проверьте, что файлы содержат текст и не повреждены.")
+                elif "лимит" in error_message.lower() and "токен" in error_message.lower():
+                    st.error("❌ Превышен лимит токенов\n\nВакансия и/или резюме слишком большие для обработки.")
+                else:
+                    st.error(f"❌ Ошибка при оценке резюме: {error_message}")
                 st.session_state[k("result")] = None
             finally:
                 st.session_state[k("busy")] = False

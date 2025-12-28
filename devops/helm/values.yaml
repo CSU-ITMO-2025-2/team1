@@ -177,4 +177,4 @@ namespace:
 
 global:
   istio:
-    enabled: false  
+    enabled: false
