@@ -76,6 +76,7 @@ st.session_state.setdefault(k("result"), None)  # результат выпол�
 st.session_state.setdefault(k("uploader_key"), 0)  # id загрузки
 st.session_state.setdefault(k("busy"), False)  # loading
 st.session_state.setdefault(k("case_input_text"), "")  # исходные данные
+st.session_state.setdefault(k("request_sent"), False)  # флаг отправки запроса
 
 busy = st.session_state[k("busy")]
 
