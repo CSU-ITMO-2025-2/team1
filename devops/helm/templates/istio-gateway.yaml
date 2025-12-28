@@ -1,0 +1,34 @@
+{{- if and .Values.ingress.enabled (or .Values.istio.enabled (and .Values.global.istio .Values.global.istio.enabled)) }}
+{{- if .Values.istio.gateway.enabled }}
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: {{ .Release.Name }}-gateway
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "team1-hr-assist.labels" . | nindent 4 }}
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - {{ .Values.ingress.host | default "*" | quote }}
+      {{- if .Values.ingress.tls }}
+    - port:
+        number: 443
+        name: https
+        protocol: HTTPS
+      hosts:
+        - {{ .Values.ingress.host | quote }}
+      tls:
+        mode: SIMPLE
+        credentialName: {{ printf "%s-tls" .Release.Name | quote }}
+      {{- end }}
+{{- end }}
+{{- end }}
+

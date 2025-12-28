@@ -178,3 +178,14 @@ namespace:
 global:
   istio:
     enabled: false
+
+istio:
+  enabled: false
+  gateway:
+    enabled: true
+  virtualService:
+    timeout: "30s"
+    retries:
+      attempts: 3
+      perTryTimeout: "10s"
+      retryOn: "5xx,connect-failure,refused-stream"
