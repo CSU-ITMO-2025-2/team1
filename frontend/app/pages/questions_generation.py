@@ -17,49 +17,78 @@ def k(name: str) -> str:
     return f"{NS}:{name}"
 
 # --- состояние ---
-st.session_state.setdefault(k("processing"), False)  # флаг обработки запроса
 st.session_state.setdefault(k("result"), None)  # результат генерации
+st.session_state.setdefault(k("busy"), False)  # флаг обработки запроса
+st.session_state.setdefault(k("request_sent"), False)  # флаг отправки запроса
+
+busy = st.session_state[k("busy")]
 
 st.caption("Загрузите два файла: **вакансию** и **резюме**. ")
 
 col_vac, col_cv = st.columns(2)
 with col_vac:
     vacancy_file = st.file_uploader(
-        "Вакансия (PDF/DOCX/TXT)", type=["pdf", "docx", "txt"], key="vacancy_file"
+        "Вакансия (PDF/DOCX/TXT)", 
+        type=["pdf", "docx", "txt"], 
+        key="vacancy_file",
+        disabled=busy
     )
 with col_cv:
     resume_file = st.file_uploader(
-        "Резюме (PDF/DOCX/TXT)", type=["pdf", "docx", "txt"], key="resume_file"
+        "Резюме (PDF/DOCX/TXT)", 
+        type=["pdf", "docx", "txt"], 
+        key="resume_file",
+        disabled=busy
     )
 
-    # Проверка загрузки файлов
-    disabled = not (vacancy_file and resume_file)
+# Проверка загрузки файлов
+disabled = not (vacancy_file and resume_file)
 
-processing = st.session_state[k("processing")]
+# Контейнер под кнопку и спиннер
+row = st.container(
+    horizontal=True,
+    gap="small",
+    height=60,
+    vertical_alignment="center",
+    horizontal_alignment="left",
+    border=False,
+)
 
-# Кнопка оценки
-if st.button("Сгенерировать вопросы", disabled=disabled or processing, type="primary"):
-    if disabled:
-        st.warning("Пожалуйста, загрузите оба файла")
-    elif not processing:  # Защита от повторных нажатий
-        st.session_state[k("processing")] = True
-        with st.spinner("Отправляем на сервер и ждём ответ…"):
+with row:
+    # Кнопка только устанавливает флаг
+    if st.button("Сгенерировать вопросы", disabled=disabled or busy, type="primary"):
+        if disabled:
+            st.warning("Пожалуйста, загрузите оба файла")
+        else:
+            st.session_state[k("busy")] = True
+            st.rerun()
+
+with row:
+    spin_slot = st.empty()
+
+# Обработка запроса вне блока кнопки
+if st.session_state[k("busy")]:
+    if not st.session_state[k("request_sent")]:
+        st.session_state[k("request_sent")] = True
+        
+        with spin_slot, st.spinner("Отправляем на сервер и ждём ответ…"):
             try:
-                # Отправляем либо файлы, либо текст
                 result_raw = question_generation(
                     vacancy_file=vacancy_file,
                     resume_file=resume_file
                 )
                 result = result_raw.get("data", result_raw)
-                st.session_state[k("result")] = result  # Сохраняем результат
+                st.session_state[k("result")] = result
             except Exception as e:
                 st.error(f"Извините, произошла техническая ошибка: {e}")
-                st.session_state[k("result")] = None  # Очищаем результат при ошибке
+                st.session_state[k("result")] = None
             finally:
-                st.session_state[k("processing")] = False
-                st.rerun()  # Перерисовываем страницу для отображения результата
+                st.session_state[k("busy")] = False
+                st.session_state[k("request_sent")] = False
+                st.rerun()
 
-# Отображаем результат вне блока кнопки
-if st.session_state[k("result")] is not None:
+# Отображаем результат
+result = st.session_state[k("result")]
+if result:
     st.success("Готово!")
-    get_report(st.session_state[k("result")])
+    get_report(result)
