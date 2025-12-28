@@ -177,10 +177,10 @@ namespace:
 
 global:
   istio:
-    enabled: true
+    enabled: false
 
 istio:
-  enabled: true
+  enabled: false
   gateway:
     enabled: true
   virtualService:
