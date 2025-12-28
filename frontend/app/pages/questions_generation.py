@@ -57,6 +57,7 @@ if st.button("Сгенерировать вопросы", disabled=disabled or p
                 st.session_state[k("result")] = None  # Очищаем результат при ошибке
             finally:
                 st.session_state[k("processing")] = False
+                st.rerun()  # Перерисовываем страницу для отображения результата
 
 # Отображаем результат вне блока кнопки
 if st.session_state[k("result")] is not None:
