@@ -45,7 +45,7 @@ probes:
     failureThreshold: 3
 
 istio:
-  enabled: false
+  enabled: true
   circuitBreaker:
     maxConnections: 100
     connectTimeout: "30s"
