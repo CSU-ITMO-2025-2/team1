@@ -112,20 +112,32 @@ jobs:
         run: |
           echo "Updating image tags to ${{ steps.vars.outputs.short_sha }}"
           
-          # Обновление всех тегов образов
+          # Обновление всех тегов образов в главном values.yaml
           yq eval ".image.coreApi.tag = \"${{ steps.vars.outputs.short_sha }}\"" -i values.yaml
           yq eval ".image.frontend.tag = \"${{ steps.vars.outputs.short_sha }}\"" -i values.yaml
           yq eval ".image.resumeWorker.tag = \"${{ steps.vars.outputs.short_sha }}\"" -i values.yaml
           yq eval ".image.jobDescrWorker.tag = \"${{ steps.vars.outputs.short_sha }}\"" -i values.yaml
           yq eval ".image.questionWorker.tag = \"${{ steps.vars.outputs.short_sha }}\"" -i values.yaml
           
-          # Обновление тегов в под-чартах
+          # Обновление тегов в под-чартах (для воркеров)
           yq eval ".\"job-description-service\".image.tag = \"${{ steps.vars.outputs.short_sha }}\"" -i values.yaml
           yq eval ".\"question-generation-service\".image.tag = \"${{ steps.vars.outputs.short_sha }}\"" -i values.yaml
           yq eval ".\"resume-evaluation-service\".image.tag = \"${{ steps.vars.outputs.short_sha }}\"" -i values.yaml
           
+          # Обновление тегов в subchart values файлах (для Core API и Frontend)
+          yq eval ".image.tag = \"${{ steps.vars.outputs.short_sha }}\"" -i charts/core-api/values.yaml
+          yq eval ".image.repository = \"ghcr.io/csu-itmo-2025-2/team1-core-api\"" -i charts/core-api/values.yaml
+          yq eval ".image.tag = \"${{ steps.vars.outputs.short_sha }}\"" -i charts/frontend/values.yaml
+          yq eval ".image.repository = \"ghcr.io/csu-itmo-2025-2/team1-frontend\"" -i charts/frontend/values.yaml
+          
           echo "Updated values.yaml:"
           cat values.yaml | grep "tag:"
+          echo ""
+          echo "Updated subchart values:"
+          echo "Core API:"
+          cat charts/core-api/values.yaml | grep -A 1 "image:"
+          echo "Frontend:"
+          cat charts/frontend/values.yaml | grep -A 1 "image:"
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
