@@ -101,27 +101,34 @@ with col_cv:
 # Проверка загрузки файлов
 disabled = not (vacancy_file and resume_file)
 
-# Контейнер под кнопку и спиннер
-row = st.container(
-    horizontal=True,
-    gap="small",
-    height=60,
-    vertical_alignment="center",
-    horizontal_alignment="left",
-    border=False,
-)
+# Форма для кнопки оценки
+with st.form("resume_eval_form"):
+    row = st.container(
+        horizontal=True,
+        gap="small",
+        height=60,
+        vertical_alignment="center",
+        horizontal_alignment="left",
+        border=False,
+    )
 
-with row:
-    # Кнопка оценки
-    if st.button("Оценить соответствие", disabled=disabled or busy, type="primary"):
-        if disabled:
-            st.warning("Пожалуйста, загрузите оба файла.")
-        else:
-            st.session_state[k("busy")] = True
-            st.rerun()
+    with row:
+        submitted = st.form_submit_button(
+            "Оценить соответствие",
+            disabled=disabled or busy,
+            type="primary"
+        )
 
-with row:
-    spin_slot = st.empty()
+    with row:
+        spin_slot = st.empty()
+
+# Обработка отправки формы
+if submitted and not busy:
+    if disabled:
+        st.warning("Пожалуйста, загрузите оба файла.")
+    else:
+        st.session_state[k("busy")] = True
+        st.rerun()
 
 if st.session_state[k("busy")]:
     # Проверяем, был ли уже отправлен запрос (защита от дублирования при st.rerun)
