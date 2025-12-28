@@ -15,6 +15,10 @@ spec:
     metadata:
       labels:
         {{- include "core-api.selectorLabels" . | nindent 8 }}
+      {{- if or .Values.istio.enabled (and .Values.global.istio .Values.global.istio.enabled) }}
+      annotations:
+        sidecar.istio.io/inject: "true"
+      {{- end }}
     spec:
       {{- if or .Values.rbac.enabled (and .Values.global.rbac .Values.global.rbac.enabled) }}
       serviceAccountName: {{ include "core-api.serviceAccountName" . }}

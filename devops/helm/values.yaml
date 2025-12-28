@@ -171,3 +171,10 @@ networkPolicy:
   enabled: true
   name: team1-project-egress-openai-via-squid
 
+namespace:
+  create: false
+  name: ""
+
+global:
+  istio:
+    enabled: false

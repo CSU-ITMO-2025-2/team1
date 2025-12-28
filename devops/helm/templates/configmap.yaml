@@ -5,25 +5,20 @@ metadata:
 data:
   OPENAI_MODEL_NAME: {{ .Values.env.openaiModelName | quote }}
   OPENAI_API_BASE: {{ .Values.env.openaiApiBase | quote }}
-
   RABBITMQ_DEFAULT_USER: {{ .Values.rabbitmq.username | quote }}
   RABBITMQ_DEFAULT_VHOST: {{ .Values.rabbitmq.vhost | quote }}
   RABBITMQ_PORT: {{ .Values.rabbitmq.port | quote }}
   RABBITMQ_UI_PORT: {{ .Values.rabbitmq.uiPort | quote }}
   RABBITMQ_DEFAULT_HOST: {{ .Values.rabbitmq.host | default (printf "%s-rabbitmq" .Release.Name) | quote }}
-
   STREAMLIT_SERVER_ADDRESS: "0.0.0.0"
   STREAMLIT_SERVER_PORT: "8501"
   STREAMLIT_SERVER_HEADLESS: "true"
   STREAMLIT_BROWSER_GATHER_USAGE_STATS: "false"
   STREAMLIT_THEME_BASE: "light"
-
   CORE_API_PORT: "8000"
   CORE_API_HOST: {{ printf "%s-core-api" .Release.Name | quote }}
-
   POSTGRES_HOST: {{ printf "%s-postgres" .Release.Name | quote }}
   POSTGRES_PORT: {{ .Values.postgres.port | quote }}
   POSTGRES_DB: {{ .Values.postgres.db | quote }}
   POSTGRES_USER: {{ .Values.postgres.username | quote }}
-
   LOG_LEVEL: {{ .Values.env.logLevel | quote }}

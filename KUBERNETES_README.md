@@ -335,6 +335,80 @@ Probes настроены в values.yaml каждого сервиса и при
 - Установлены CPU и Memory limits для всех сервисов
 - Предотвращение исчерпания ресурсов кластера
 
+**Circuit Breaker:**
+Реализован через Istio Service Mesh с использованием DestinationRule. Circuit breaker автоматически изолирует нездоровые поды при превышении порога ошибок.
+
+**Стратегия применения:**
+
+**Circuit Breaker настроен только для Core API:**
+- ✅ **Core API** - единственный сервис, который принимает HTTP запросы от frontend, где circuit breaker действительно эффективен
+
+**Текущая конфигурация:** Circuit breaker включен только для 3 критических сервисов (core-api, postgres, rabbitmq).
+
+Подробнее см. `CIRCUIT_BREAKER_STRATEGY.md`
+
+**Конфигурация:**
+- Файлы: `devops/helm/charts/core-api/templates/destinationrule.yaml` (только для Core API)
+- Настройки: `devops/helm/charts/core-api/values.yaml` (секция `istio`)
+- Глобальная настройка: `devops/helm/values.yaml` (секция `global.istio.enabled`)
+
+**Параметры Circuit Breaker:**
+- `consecutiveErrors` - количество последовательных ошибок перед изоляцией пода (по умолчанию: 5)
+- `interval` - интервал проверки состояния (по умолчанию: 30s)
+- `baseEjectionTime` - базовое время изоляции пода (по умолчанию: 30s)
+- `maxEjectionPercent` - максимальный процент подов, которые могут быть изолированы (по умолчанию: 50%)
+- `minHealthPercent` - минимальный процент здоровых подов (по умолчанию: 50%)
+
+**Connection Pool Settings:**
+- `maxConnections` - максимальное количество соединений
+- `maxPendingRequests` - максимальное количество ожидающих HTTP запросов
+- `maxRetries` - максимальное количество повторных попыток
+- `connectTimeout` - таймаут установки соединения
+
+**Включение:**
+```bash
+# Включить circuit breaker для всех сервисов через глобальную настройку
+helm upgrade team1 devops/helm --namespace team1-ns \
+  --set global.istio.enabled=true
+
+# Или включить для конкретного сервиса
+helm upgrade team1 devops/helm --namespace team1-ns \
+  --set core-api.istio.enabled=true
+```
+
+**Инъекция Istio Sidecar:**
+
+Для работы circuit breaker необходимо, чтобы поды были частью Istio service mesh. Это достигается через инъекцию sidecar proxy (Envoy).
+
+**Два способа инъекции:**
+
+1. **Автоматическая инъекция через label namespace** (рекомендуется):
+   ```bash
+   # Добавить label к namespace
+   kubectl label namespace team1-ns istio-injection=enabled
+   ```
+
+2. **Ручная инъекция через аннотации в подах** (уже настроено в шаблонах):
+   - Все deployment шаблоны автоматически добавляют аннотацию `sidecar.istio.io/inject: "true"` при включении Istio
+   - Namespace можно настроить через `namespace.create: true` в `values.yaml`
+
+**Проверка:**
+```bash
+# Проверить созданные DestinationRule
+kubectl get destinationrule -n team1-ns
+
+# Описание конкретного DestinationRule
+kubectl describe destinationrule core-api-destinationrule -n team1-ns
+
+# Проверить, что sidecar инжектирован в под
+kubectl get pod <pod-name> -n team1-ns -o jsonpath='{.spec.containers[*].name}'
+# Должно показать: <container-name> istio-proxy
+
+# Проверить label namespace
+kubectl get namespace team1-ns -o jsonpath='{.metadata.labels.istio-injection}'
+# Должно показать: enabled
+```
+
 ---
 
 ## 8. ⏳ Chaos Engineering
@@ -413,6 +487,7 @@ Core API отправляет задачи в очереди RabbitMQ, worker-с
 | Масштабирование (HPA, KEDA) | ✅ | HPA для API/Frontend, KEDA для workers |
 | Probes | ✅ | Liveness и readiness для всех сервисов |
 | Retry/Fallback | ✅ | Множественные реплики, resource limits |
+| Circuit Breaker (Istio) | ✅ | DestinationRule с настройками outlier detection |
 | Chaos Engineering | ✅ | |
 | Pub/Sub взаимодействие | ✅ | RabbitMQ с очередями |
 | Документация | ✅ | Инструкция по запуску и отчет |
