@@ -21,6 +21,7 @@
 
 {{- define "core-api.labels" -}}
 helm.sh/chart: {{ include "core-api.chart" . }}
+sidecar.istio.io/inject: "true"
 {{ include "core-api.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
