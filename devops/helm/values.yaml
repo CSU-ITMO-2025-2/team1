@@ -178,7 +178,6 @@ namespace:
 global:
   istio:
     enabled: true
-
 istio:
   enabled: true
   gateway:
