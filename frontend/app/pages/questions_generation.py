@@ -67,8 +67,11 @@ row = st.container(
 with row:
     # Кнопка генерации
     if st.button("Сгенерировать вопросы", disabled=disabled or busy, type="primary"):
-        st.session_state[k("busy")] = True
-        st.rerun()
+        if disabled:
+            st.warning("Пожалуйста, загрузите оба файла")
+        else:
+            st.session_state[k("busy")] = True
+            st.rerun()
 
 with row:
     spin_slot = st.empty()
