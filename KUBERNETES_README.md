@@ -24,9 +24,6 @@ Frontend → Core API → PostgreSQL
 ### 1. Подготовка
 
 ```bash
-# Создание namespace
-kubectl create namespace team1-ns
-
 # Обновление зависимостей Helm
 cd devops/helm
 helm dependency update
@@ -35,15 +32,8 @@ helm dependency update
 ### 2. Настройка секретов
 
 **Kubernetes Secrets:**
-```bash
-kubectl create secret generic team-1-secrets \
-  --from-literal=openai-api-key=<key> \
-  --from-literal=postgres-password=<password> \
-  --from-literal=rabbitmq-password=<password> \
-  --namespace=team1-ns
-```
 
-**Или через Vault:** Настройте секреты в Vault по путям `team1/hr-assist/*` (см. `devops/helm/templates/vault-externalsecret.yaml`)
+**через Vault:** Настройте секреты в Vault по путям `team1/hr-assist/*` (см. `devops/helm/templates/vault-externalsecret.yaml`)
 
 ### 3. Установка
 
@@ -57,6 +47,10 @@ helm install team1 devops/helm \
   --set global.rbac.enabled=true
 ```
 
+**ИЛИ**
+
+Gitips c ArgoCD
+
 ### 4. Обновление/Откат
 
 ```bash
@@ -65,41 +59,10 @@ helm upgrade team1 devops/helm --namespace team1-ns
 
 # Откат
 helm rollback team1 --namespace team1-ns
-```
 
----
+**ИЛИ**
 
-## Проверка работоспособности
-
-```bash
-# Статус подов
-kubectl get pods -n team1-ns
-
-# Логи
-kubectl logs -n team1-ns -l app=core-api --tail=50
-
-# Доступ через port-forward
-kubectl port-forward -n team1-ns svc/team1-frontend 8501:8501
-kubectl port-forward -n team1-ns svc/team1-core-api 8000:8000
-```
-
----
-
-## Устранение неполадок
-
-```bash
-# Описание пода (события, ошибки)
-kubectl describe pod <pod-name> -n team1-ns
-
-# Логи пода
-kubectl logs <pod-name> -n team1-ns
-
-# Проверка ресурсов
-kubectl top pods -n team1-ns
-
-# Удаление развертывания
-helm uninstall team1 --namespace team1-ns
-```
+Gitips c ArgoCD
 
 ---
 
@@ -109,9 +72,8 @@ helm uninstall team1 --namespace team1-ns
 
 ## 1. ✅ Микросервисы
 
-**Статус:** Выполнено
 
-Реализовано 7 микросервисов (превышает минимальное требование в 3):
+Реализовано 7 микросервисов:
 
 1. **Core API** - основной API-сервис на FastAPI (порт 8000, 3 реплики)
 2. **Frontend** - веб-интерфейс на Streamlit (порт 8501)
@@ -132,9 +94,6 @@ helm uninstall team1 --namespace team1-ns
 ---
 
 ## 2. ✅ Развертывание через Helm
-
-**Статус:** Выполнено  
-**Выполнил:** Поляков Егор
 
 Все компоненты развернуты через Helm charts с иерархической структурой. Реализована модульная архитектура с главным chart и отдельными subcharts для каждого сервиса.
 
@@ -195,33 +154,22 @@ helm uninstall team1 --namespace team1-ns
 6. **Глобальные настройки**: Поддержка глобальных ConfigMap и Secret через `global.configMapName` и `global.secretName` в главном values.yaml
 7. **Условная логика**: Использование `{{- if }}` для условного создания ресурсов (например, ServiceAccount только при включенном RBAC)
 
----
-
-## 3. ⏳ GitOps-деплой
-
-**Статус:** Выполнено
-**Выполнил:**: 
 
 
-## 4. ⏳ CI/CD-пайплайн
+## 3. ✅ GitOps-деплой
 
-**Статус:** Выполнено
-**Выполнил:**: 
 
-_Место для описания CI/CD-пайплайна, автоматически собирающего образы и публикующего их в registry._
+Создан отдельный GitOps репозиторий - https://github.com/CSU-ITMO-2025-2/team1-gitops
 
-**Планируемая реализация:**
-- Настройка GitHub Actions / GitLab CI / Jenkins для автоматической сборки образов
-- Публикация образов в Docker registry при коммитах в определенные ветки
-- Автоматическое обновление Helm charts с новыми версиями образов
-- Интеграция с GitOps для автоматического развертывания
+Настроена работа с ArgoCD - https://argo.kubepractice.ru/applications/argocd/team1-project?view=tree
 
----
+
+
+## 4. ✅  CI/CD-пайплайн
+
+Настроен CI-CD пайплайн, включающий cannnary-deployment
 
 ## 5. ✅ Секреты и конфигурации
-
-**Статус:** Выполнено
-**Выполнил:**: 
 
 ### Управление секретами
 
@@ -254,9 +202,6 @@ _Место для описания CI/CD-пайплайна, автоматич
 ---
 
 ## 6. ✅ Безопасность
-
-**Статус:** Выполнено
-**Выполнил:**: 
 
 ### Разграничение прав доступа (RBAC)
 
@@ -310,10 +255,11 @@ _Место для описания CI/CD-пайплайна, автоматич
 - Использует метрики Prometheus от RabbitMQ (порт 15692)
 - Настройки: minReplicaCount: 1, maxReplicaCount: 5, threshold: 10 сообщений на реплику
 
+
+**Circuit Break** для core-api - Выполнено частино. Сделана настройка в helm-чартах, но не оказалось прав для добавления labels istio в namespace. 
+
 ### Health Checks (Probes)
 
-**Статус:** Выполнено  
-**Выполнил:** Поляков Егор
 
 Все сервисы настроены с liveness и readiness probes:
 
@@ -335,92 +281,11 @@ Probes настроены в values.yaml каждого сервиса и при
 - Установлены CPU и Memory limits для всех сервисов
 - Предотвращение исчерпания ресурсов кластера
 
-**Circuit Breaker:**
-Реализован через Istio Service Mesh с использованием DestinationRule. Circuit breaker автоматически изолирует нездоровые поды при превышении порога ошибок.
 
-**Стратегия применения:**
-
-**Circuit Breaker настроен только для Core API:**
-- ✅ **Core API** - единственный сервис, который принимает HTTP запросы от frontend, где circuit breaker действительно эффективен
-
-**Текущая конфигурация:** Circuit breaker включен только для 3 критических сервисов (core-api, postgres, rabbitmq).
-
-Подробнее см. `CIRCUIT_BREAKER_STRATEGY.md`
-
-**Конфигурация:**
-- Файлы: `devops/helm/charts/core-api/templates/destinationrule.yaml` (только для Core API)
-- Настройки: `devops/helm/charts/core-api/values.yaml` (секция `istio`)
-- Глобальная настройка: `devops/helm/values.yaml` (секция `global.istio.enabled`)
-
-**Параметры Circuit Breaker:**
-- `consecutiveErrors` - количество последовательных ошибок перед изоляцией пода (по умолчанию: 5)
-- `interval` - интервал проверки состояния (по умолчанию: 30s)
-- `baseEjectionTime` - базовое время изоляции пода (по умолчанию: 30s)
-- `maxEjectionPercent` - максимальный процент подов, которые могут быть изолированы (по умолчанию: 50%)
-- `minHealthPercent` - минимальный процент здоровых подов (по умолчанию: 50%)
-
-**Connection Pool Settings:**
-- `maxConnections` - максимальное количество соединений
-- `maxPendingRequests` - максимальное количество ожидающих HTTP запросов
-- `maxRetries` - максимальное количество повторных попыток
-- `connectTimeout` - таймаут установки соединения
-
-**Включение:**
-```bash
-# Включить circuit breaker для всех сервисов через глобальную настройку
-helm upgrade team1 devops/helm --namespace team1-ns \
-  --set global.istio.enabled=true
-
-# Или включить для конкретного сервиса
-helm upgrade team1 devops/helm --namespace team1-ns \
-  --set core-api.istio.enabled=true
-```
-
-**Инъекция Istio Sidecar:**
-
-Для работы circuit breaker необходимо, чтобы поды были частью Istio service mesh. Это достигается через инъекцию sidecar proxy (Envoy).
-
-**Два способа инъекции:**
-
-1. **Автоматическая инъекция через label namespace** (рекомендуется):
-   ```bash
-   # Добавить label к namespace
-   kubectl label namespace team1-ns istio-injection=enabled
-   ```
-
-2. **Ручная инъекция через аннотации в подах** (уже настроено в шаблонах):
-   - Все deployment шаблоны автоматически добавляют аннотацию `sidecar.istio.io/inject: "true"` при включении Istio
-   - Namespace можно настроить через `namespace.create: true` в `values.yaml`
-
-**Проверка:**
-```bash
-# Проверить созданные DestinationRule
-kubectl get destinationrule -n team1-ns
-
-# Описание конкретного DestinationRule
-kubectl describe destinationrule core-api-destinationrule -n team1-ns
-
-# Проверить, что sidecar инжектирован в под
-kubectl get pod <pod-name> -n team1-ns -o jsonpath='{.spec.containers[*].name}'
-# Должно показать: <container-name> istio-proxy
-
-# Проверить label namespace
-kubectl get namespace team1-ns -o jsonpath='{.metadata.labels.istio-injection}'
-# Должно показать: enabled
-```
-
----
-
-## 8. ⏳ Chaos Engineering
-
-**Статус:** Выполнено
-
+## 8. ✅ Chaos Engineering
 
 
 ## 9. ✅ Взаимодействие между сервисами через Pub/Sub
-
-**Статус:** Выполнено
-**Выполнил:**: 
 
 ### Интеграция RabbitMQ
 
@@ -496,7 +361,7 @@ Core API отправляет задачи в очереди RabbitMQ, worker-с
 
 ## Список участников
 
-- Поляков Егор - helm чарты, probes, документация
+- Поляков Егор - helm чарты, probes, Circuit Breaks,документация
 - Ильин Глеб - Безопаность, HPA
 - Пискаев Максим - Chaos Engineering, доработка арго и докерфайлов
 - Дорофеев Дмитирй - Настройка Rabbit
