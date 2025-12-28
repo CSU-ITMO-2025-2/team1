@@ -51,21 +51,3 @@ probes:
     periodSeconds: 10
     timeoutSeconds: 5
     failureThreshold: 3
-
-# Istio Circuit Breaker configuration
-istio:
-  enabled: false
-  circuitBreaker:
-    maxConnections: 30
-    connectTimeout: "30s"
-    maxPendingRequests: 5
-    maxRequests: 30
-    maxRequestsPerConnection: 1
-    maxRetries: 2
-    idleTimeout: "60s"
-    consecutiveErrors: 5
-    interval: "30s"
-    baseEjectionTime: "30s"
-    maxEjectionPercent: 50
-    minHealthPercent: 50
-    splitExternalLocalOriginErrors: false

@@ -360,9 +360,18 @@ Probes настроены в values.yaml каждого сервиса и при
 **Circuit Breaker:**
 Реализован через Istio Service Mesh с использованием DestinationRule. Circuit breaker автоматически изолирует нездоровые поды при превышении порога ошибок.
 
+**Стратегия применения:**
+
+**Circuit Breaker настроен только для Core API:**
+- ✅ **Core API** - единственный сервис, который принимает HTTP запросы от frontend, где circuit breaker действительно эффективен
+
+**Текущая конфигурация:** Circuit breaker включен только для 3 критических сервисов (core-api, postgres, rabbitmq).
+
+Подробнее см. `CIRCUIT_BREAKER_STRATEGY.md`
+
 **Конфигурация:**
-- Файлы: `devops/helm/charts/*/templates/destinationrule.yaml` (отдельный файл для каждого сервиса)
-- Настройки: `devops/helm/charts/*/values.yaml` (секция `istio` в каждом subchart)
+- Файлы: `devops/helm/charts/core-api/templates/destinationrule.yaml` (только для Core API)
+- Настройки: `devops/helm/charts/core-api/values.yaml` (секция `istio`)
 - Глобальная настройка: `devops/helm/values.yaml` (секция `global.istio.enabled`)
 
 **Параметры Circuit Breaker:**
@@ -389,6 +398,22 @@ helm upgrade team1 devops/helm --namespace team1-ns \
   --set core-api.istio.enabled=true
 ```
 
+**Инъекция Istio Sidecar:**
+
+Для работы circuit breaker необходимо, чтобы поды были частью Istio service mesh. Это достигается через инъекцию sidecar proxy (Envoy).
+
+**Два способа инъекции:**
+
+1. **Автоматическая инъекция через label namespace** (рекомендуется):
+   ```bash
+   # Добавить label к namespace
+   kubectl label namespace team1-ns istio-injection=enabled
+   ```
+
+2. **Ручная инъекция через аннотации в подах** (уже настроено в шаблонах):
+   - Все deployment шаблоны автоматически добавляют аннотацию `sidecar.istio.io/inject: "true"` при включении Istio
+   - Namespace можно настроить через `namespace.create: true` в `values.yaml`
+
 **Проверка:**
 ```bash
 # Проверить созданные DestinationRule
@@ -396,6 +421,14 @@ kubectl get destinationrule -n team1-ns
 
 # Описание конкретного DestinationRule
 kubectl describe destinationrule core-api-destinationrule -n team1-ns
+
+# Проверить, что sidecar инжектирован в под
+kubectl get pod <pod-name> -n team1-ns -o jsonpath='{.spec.containers[*].name}'
+# Должно показать: <container-name> istio-proxy
+
+# Проверить label namespace
+kubectl get namespace team1-ns -o jsonpath='{.metadata.labels.istio-injection}'
+# Должно показать: enabled
 ```
 
 ---

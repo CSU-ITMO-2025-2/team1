@@ -1,7 +1,6 @@
 
 {{- if .Values.secrets.useExternal }}
 ---
-# Shared SecretStore (unchanged)
 apiVersion: external-secrets.io/v1
 kind: SecretStore
 metadata:
@@ -22,7 +21,6 @@ spec:
               key: password
 
 ---
-# PostgreSQL Secrets ONLY
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
@@ -38,11 +36,10 @@ spec:
   data:
     - secretKey: POSTGRES_PASSWORD
       remoteRef:
-        key: team1/hr-assist/postgres  # Separate Vault path
+        key: team1/hr-assist/postgres
         property: POSTGRES_PASSWORD
 
 ---
-# RabbitMQ Secrets ONLY
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
@@ -66,7 +63,6 @@ spec:
         property: RABBITMQ_DEFAULT_PASS
 
 ---
-# Core API Secrets (needs OpenAI, Postgres connection, RabbitMQ connection)
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
@@ -94,7 +90,6 @@ spec:
         property: RABBITMQ_DEFAULT_PASS
 
 ---
-# Workers Secrets (needs OpenAI, RabbitMQ)
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
@@ -118,7 +113,6 @@ spec:
         property: RABBITMQ_DEFAULT_PASS
 
 ---
-# Frontend Secrets (needs Keycloak client secret)
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:

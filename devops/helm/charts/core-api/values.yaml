@@ -44,11 +44,9 @@ probes:
     timeoutSeconds: 3
     failureThreshold: 3
 
-# Istio Circuit Breaker configuration
 istio:
-  enabled: false  # Установите true для включения Circuit Breaker через Istio
+  enabled: false
   circuitBreaker:
-    # Connection Pool Settings
     maxConnections: 100
     connectTimeout: "30s"
     maxPendingRequests: 10
@@ -56,7 +54,6 @@ istio:
     maxRequestsPerConnection: 2
     maxRetries: 3
     idleTimeout: "90s"
-    # Outlier Detection (Circuit Breaker)
     consecutiveErrors: 5
     interval: "30s"
     baseEjectionTime: "30s"
