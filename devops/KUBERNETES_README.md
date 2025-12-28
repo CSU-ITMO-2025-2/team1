@@ -358,7 +358,45 @@ Probes настроены в values.yaml каждого сервиса и при
 - Предотвращение исчерпания ресурсов кластера
 
 **Circuit Breaker:**
-Не реализован на уровне инфраструктуры Kubernetes. Может быть реализован на уровне приложения через библиотеки (`circuitbreaker`, `tenacity` для Python).
+Реализован через Istio Service Mesh с использованием DestinationRule. Circuit breaker автоматически изолирует нездоровые поды при превышении порога ошибок.
+
+**Конфигурация:**
+- Файлы: `devops/helm/charts/*/templates/destinationrule.yaml` (отдельный файл для каждого сервиса)
+- Настройки: `devops/helm/charts/*/values.yaml` (секция `istio` в каждом subchart)
+- Глобальная настройка: `devops/helm/values.yaml` (секция `global.istio.enabled`)
+
+**Параметры Circuit Breaker:**
+- `consecutiveErrors` - количество последовательных ошибок перед изоляцией пода (по умолчанию: 5)
+- `interval` - интервал проверки состояния (по умолчанию: 30s)
+- `baseEjectionTime` - базовое время изоляции пода (по умолчанию: 30s)
+- `maxEjectionPercent` - максимальный процент подов, которые могут быть изолированы (по умолчанию: 50%)
+- `minHealthPercent` - минимальный процент здоровых подов (по умолчанию: 50%)
+
+**Connection Pool Settings:**
+- `maxConnections` - максимальное количество соединений
+- `maxPendingRequests` - максимальное количество ожидающих HTTP запросов
+- `maxRetries` - максимальное количество повторных попыток
+- `connectTimeout` - таймаут установки соединения
+
+**Включение:**
+```bash
+# Включить circuit breaker для всех сервисов через глобальную настройку
+helm upgrade team1 devops/helm --namespace team1-ns \
+  --set global.istio.enabled=true
+
+# Или включить для конкретного сервиса
+helm upgrade team1 devops/helm --namespace team1-ns \
+  --set core-api.istio.enabled=true
+```
+
+**Проверка:**
+```bash
+# Проверить созданные DestinationRule
+kubectl get destinationrule -n team1-ns
+
+# Описание конкретного DestinationRule
+kubectl describe destinationrule core-api-destinationrule -n team1-ns
+```
 
 ---
 
@@ -439,6 +477,7 @@ Core API отправляет задачи в очереди RabbitMQ, worker-с
 | Масштабирование (HPA, KEDA) | ✅ | HPA для API/Frontend, KEDA для workers |
 | Probes | ✅ | Liveness и readiness для всех сервисов |
 | Retry/Fallback | ✅ | Множественные реплики, resource limits |
+| Circuit Breaker (Istio) | ✅ | DestinationRule с настройками outlier detection |
 | Chaos Engineering | ✅ | |
 | Pub/Sub взаимодействие | ✅ | RabbitMQ с очередями |
 | Документация | ✅ | Инструкция по запуску и отчет |

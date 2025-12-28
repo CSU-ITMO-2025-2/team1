@@ -184,7 +184,8 @@ networkPolicy:
   name: team1-project-egress-openai-via-squid  # Используем существующее имя
 
 # Istio Service Mesh configuration for Circuit Breaker
-istio:
-  enabled: false  # Установите true для включения Circuit Breaker через Istio
-  # Circuit Breaker будет работать автоматически после установки Istio
-  # и включения этой опции  
+# Circuit Breaker настраивается индивидуально в каждом subchart через values.yaml
+# Глобальная настройка для включения/выключения Istio во всех сервисах
+global:
+  istio:
+    enabled: false  # Установите true для включения Circuit Breaker через Istio во всех сервисах  
