@@ -19,6 +19,7 @@ app = FastAPI(
     description="API для HR-ассистента",
     version="1.0.0",
     lifespan=lifespan,
+    root_path="/api",  # Префикс для работы за Ingress
 )
 
 # Подключение middleware
