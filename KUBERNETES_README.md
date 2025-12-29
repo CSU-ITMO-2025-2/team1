@@ -49,7 +49,7 @@ helm install team1 devops/helm \
 
 **ИЛИ**
 
-Gitips c ArgoCD
+GitOps с ArgoCD
 
 ### 4. Обновление/Откат
 
@@ -59,10 +59,11 @@ helm upgrade team1 devops/helm --namespace team1-ns
 
 # Откат
 helm rollback team1 --namespace team1-ns
+```
 
 **ИЛИ**
 
-Gitips c ArgoCD
+GitOps с ArgoCD
 
 ---
 
@@ -165,9 +166,9 @@ Gitips c ArgoCD
 
 
 
-## 4. ✅  CI/CD-пайплайн
+## 4. ✅ CI/CD-пайплайн
 
-Настроен CI-CD пайплайн, включающий cannnary-deployment
+Настроен CI/CD пайплайн, включающий canary-deployment
 
 ## 5. ✅ Секреты и конфигурации
 
@@ -237,7 +238,6 @@ Gitips c ArgoCD
 ## 7. ✅ Масштабирование и отказоустойчивость
 
 **Статус:** Выполнено
-**Выполнил:**: 
 
 ### Автомасштабирование (HPA)
 
@@ -256,7 +256,7 @@ Gitips c ArgoCD
 - Настройки: minReplicaCount: 1, maxReplicaCount: 5, threshold: 10 сообщений на реплику
 
 
-**Circuit Break** для core-api - Выполнено частино. Сделана настройка в helm-чартах, но не оказалось прав для добавления labels istio в namespace. 
+**Circuit Breaker** для core-api - Выполнено частично. Сделана настройка в helm-чартах, но не оказалось прав для добавления labels istio в namespace. 
 
 ### Health Checks (Probes)
 
@@ -361,11 +361,11 @@ Core API отправляет задачи в очереди RabbitMQ, worker-с
 
 ## Список участников
 
-- Поляков Егор - helm чарты, probes, Circuit Breaks,документация
-- Ильин Глеб - Безопаность, HPA
-- Пискаев Максим - Chaos Engineering, доработка арго и докерфайлов
-- Дорофеев Дмитирй - Настройка Rabbit
-- Поляков Эдуард - Настройка Секретов, Настройка Арго
+- Поляков Егор - helm чарты, probes, Circuit Breaker, документация
+- Ильин Глеб - Безопасность, HPA
+- Пискаев Максим - Chaos Engineering, доработка ArgoCD и докерфайлов
+- Дорофеев Дмитрий - Настройка Rabbit
+- Поляков Эдуард - Настройка Секретов, Настройка ArgoCD
 ---
 
 
